@@ -1,5 +1,6 @@
 import socket
 import cv2
+import threading
 
 from servers import cam_server
 from servers import sensor_server
@@ -16,8 +17,10 @@ server_cam = cam_server.CameraServer(host_ip, port_cam)
 server_cam.start_server()
 
 # Creates and starts a TCP sensor server(socket) to receive the distances from the IR sensor attached to the pi.
+# The server is ran on a thread to keep connections seperated.
 server_sensor = sensor_server.SensorServer(host_ip, port_sensor)
-server_sensor.start_server()
+sensor_thread = threading.Thread(target=server_sensor.start_server, name="sensor_thread", args=())
+sensor_thread.start()
 
 try:
     while(True):
