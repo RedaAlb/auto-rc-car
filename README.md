@@ -7,8 +7,8 @@ This readme file is to be updated and refined.
 
 
 ## To do next
-- [ ] Use multiprocessing for the camera server.
-
+- [ ] Add and use multithreading for the sensor server.
+- [ ] Add and use multithreading for the controller server.
 
 
 ## File structure explained

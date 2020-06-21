@@ -2,17 +2,22 @@ import socket
 import cv2
 
 from servers import cam_server
+from servers import sensor_server
 
-# Computer IP address.
+# Getting computer IP address.
 host_name = socket.gethostname()
 host_ip = socket.gethostbyname(host_name)
 
 port_cam = 5000
+port_sensor = 5001
 
 # Creates and starts a UDP camera server(socket) to receive from the Raspberry Pi.
 server_cam = cam_server.CameraServer(host_ip, port_cam)
 server_cam.start_server()
 
+# Creates and starts a TCP sensor server(socket) to receive the distances from the IR sensor attached to the pi.
+server_sensor = sensor_server.SensorServer(host_ip, port_sensor)
+server_sensor.start_server()
 
 try:
     while(True):
@@ -34,6 +39,7 @@ try:
 
 finally:
     server_cam.close_server()
+    server_sensor.close_server()
 
     cv2.destroyAllWindows()
     

@@ -11,15 +11,15 @@ class CameraServer:
 
     bytes_offset = 5
 
-    def __init__(self, host, port_car):
-        self.host = host
+    def __init__(self, host_ip, port_car):
+        self.host_ip = host_ip
         self.port_car = port_car
 
         self.cam_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
     def start_server(self):
-        self.cam_socket.bind((self.host, self.port_car))
-        print("Server (camera) - UDP connection opened...")
+        self.cam_socket.bind((self.host_ip, self.port_car))
+        print(f"Server (camera) - UDP connection opened on {self.host_ip}:{self.port_car}...")
 
 
     def get_frame(self):
