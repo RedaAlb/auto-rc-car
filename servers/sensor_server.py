@@ -31,7 +31,7 @@ class SensorServer:
                 break
 
             self.distance = struct.unpack('f', data)[0]
-            print(f"{self.distance:.2f} cm")
+            # print(f"{self.distance:.2f} cm")
 
         self.close_server()
 

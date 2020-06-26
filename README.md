@@ -7,7 +7,9 @@ This readme file is to be updated and refined.
 
 
 ## To do next
-- [ ] Add and use multithreading for the sensor server.
+- [x] Add and use multithreading for the sensor server.
+- [ ] Close sensor server and thread more neatly and properly.
+- [ ] Look into multithreading options.
 - [ ] Add and use multithreading for the controller server.
 
 
