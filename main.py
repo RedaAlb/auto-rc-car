@@ -31,26 +31,30 @@ if RUN_SENSOR_SERVER:
 try:
     while(True):
 
-        # Requesting frame from RC Car
+        # Requesting a frame from RC Car (PiCamera)
         frame = server_cam.get_frame()
 
+        # If no frame data was received or something went wrong, skip this frame.
         if frame is None:
             print("No frame received")
+            continue
 
-        else:
-            # frame = cv2.resize(frame, (0, 0), fx=2, fy=2)
+        
+        # frame = cv2.resize(frame, (0, 0), fx=2, fy=2)
 
-            if server_sensor.distance is not 0:
-                print(f"{server_sensor.distance:.2f} cm")
+        if server_sensor.distance is not 0 and RUN_SENSOR_SERVER:
+            print(f"{server_sensor.distance:.2f} cm")
 
-            cv2.imshow("RC Car raw frame", frame)
+        cv2.imshow("RC Car raw frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 finally:
     server_cam.close_server()
-    server_sensor.close_server()
+
+    if RUN_SENSOR_SERVER:
+        server_sensor.close_server()
 
     cv2.destroyAllWindows()
     
