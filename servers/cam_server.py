@@ -9,8 +9,6 @@ class CameraServer:
 
     UDP_BYTE_LIMIT = 65507
 
-    bytes_offset = 5
-
     def __init__(self, host_ip, port_car):
         self.host_ip = host_ip
         self.port_car = port_car
@@ -23,18 +21,20 @@ class CameraServer:
 
 
     def get_frame(self):
-
         frame = None
 
         img_num_bytes = 0
 
-        # While not receiving from the Pi, keep trying until data is receieved.
-        while img_num_bytes == 0:
-            try:
-                # Getting the size(number of bytes) of the image to be received, (which is an int32, 4 bytes).
-                img_num_bytes = struct.unpack("<L", self.cam_socket.recvfrom(4)[0])[0]
-            except OSError as err1:
-                print("1  OSError " + str(err1))
+        try:
+            # Getting the size(number of bytes) of the image to be received, (which is an int32, 4 bytes).
+            img_num_bytes = struct.unpack("<L", self.cam_socket.recvfrom(4)[0])[0]
+            print("Frame number of bytes", img_num_bytes)
+        except OSError as err1:
+            print("1  OSError, from img number of bytes:", str(err1))
+
+        # If no data was received, skip this frame.
+        if img_num_bytes == 0:
+            return None
 
         img_bytes = b''  # This will hold the actual frame/image in bytes.
 
@@ -42,40 +42,39 @@ class CameraServer:
         if(img_num_bytes >= self.UDP_BYTE_LIMIT):
             #print("This frame was split in half.")
             
-            half1_num_bytes = int(img_num_bytes / 2)
-
-            if(img_num_bytes % 2 == 0):
-                half2_num_bytes = img_num_bytes - half1_num_bytes
-            else:
-                half2_num_bytes = img_num_bytes - half1_num_bytes - 1
-
+            half1_num_bytes = img_num_bytes // 2
+            half2_num_bytes = img_num_bytes - half1_num_bytes
+            
             try:
                 half1 = self.cam_socket.recvfrom(half1_num_bytes)[0]
             except OSError as err2:
-                print("2  OS Error, from half 1 " + str(err2))
+                print("2  OSError, from half 1:", + str(err2))
+                return None
 
             try:
-                half2 = self.cam_socket.recvfrom(half2_num_bytes + self.bytes_offset)[0]
+                half2 = self.cam_socket.recvfrom(half2_num_bytes)[0]
             except OSError as err3:
-                print("3  OS Error, from half 2 " + str(err3))
+                print("3  OSError, from half 2:", str(err3))
+                return None
 
             # Combine both halves to make the full frame.
-            img_bytes = half1 + half2
+            try:
+                img_bytes = half1 + half2
+            except NameError as err4:
+                print("4  NameError from halves combination:", str(err4))
+                return None
 
+        # Size less than UDP_BYTE_LIMIT(65507), avoid unnecessary splitting.
         else:
-            # Size less than UDP_BYTE_LIMIT(65507), avoid unnecessary splitting.
-            if img_num_bytes is not 0:
-                try:
-                    img_bytes = self.cam_socket.recvfrom(img_num_bytes)[0]
-                except OSError as err4:
-                    print("4  OS Error, from full frame " + str(err4))
+            try:
+                img_bytes = self.cam_socket.recvfrom(img_num_bytes)[0]
+            except OSError as err5:
+                print("5  OS Error, from full frame:", str(err5))
+                return None
 
-            # else:
-            # 	print("5  Full frame error.")
-
-        if img_num_bytes is not 0:
-            nparr = np.frombuffer(img_bytes, np.uint8)
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        # If none of the exceptions were hit, then we have successfully received a full frame.
+        nparr = np.frombuffer(img_bytes, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         return frame
 
