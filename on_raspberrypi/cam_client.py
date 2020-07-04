@@ -9,7 +9,8 @@ import signal
 pi_ip = "0.0.0.0"
 pi_port = 5010
 
-host_ip = "192.168.0.17"
+host_ip = "192.168.0.17"  #  desktop
+# host_ip = "192.168.0.15"    #  laptop
 host_port = 5000
 
 host = (host_ip, host_port)
@@ -17,6 +18,11 @@ host = (host_ip, host_port)
 
 UDP_BYTE_LIMIT = 65507
 SECONDS_TO_RECORD = 2000
+
+
+FPS = 30
+RESOLUTIONS = ["320x240", "640x480", "1280x720"]  # Please note for larger resolutions, splitting in half might then not be enough.
+RES_INDEX = 0
 
 
 # Creating the UDP socket and binding it locally to the pi.
@@ -46,17 +52,25 @@ class CamHandler():
             if img_num_bytes >= self.udp_byte_limit:
                 half_num_bytes = img_num_bytes // 2
 
-                # Need to consider adding try and except for these two.
-                cam_socket.sendto(img_bytes[:half_num_bytes], host)
-                cam_socket.sendto(img_bytes[half_num_bytes:], host)
+                try:
+                    cam_socket.sendto(img_bytes[:half_num_bytes], host)
+                except OSError as err:
+                    print("2  OSError, from half 1:", str(err))
+
+                try:
+                    cam_socket.sendto(img_bytes[half_num_bytes:], host)
+                except OSError as err:
+                    print("3  OSError, from half 2:", str(err))
 
             # Otherwise avoid unnecessary splitting and send the full frame as one packet.
             else:
                 try:
                     cam_socket.sendto(img_bytes, host)
                 except OSError as err:
-                    print("2  OSError, from full frame:", str(err))
-    
+                    print("4  OSError, from full frame:", str(err))
+        
+        # time.sleep(0.5)
+
     def flush(self):
         pass
 
@@ -71,18 +85,16 @@ signal.signal(signal.SIGINT, signal_handler)
 try:
     cam_handler = CamHandler(UDP_BYTE_LIMIT)
 
-    fps = 30
-    resolutions = ["320x240", "640x480", "1280x720"]  # Please note for larger resolutions, splitting in half might then not be enough.
-
-    with picamera.PiCamera(resolution=resolutions[0], framerate=fps) as camera:
+    with picamera.PiCamera(resolution=RESOLUTIONS[RES_INDEX], framerate=FPS) as camera:
         print("PiCamera - Getting ready...")
         time.sleep(2)
         camera.rotation = 180
         #camera.color_effects = (128,128)
         camera.start_recording(cam_handler, format='mjpeg')
+        print("PiCamera - Ready and is sending frames to the computer...")
         camera.wait_recording(SECONDS_TO_RECORD)
         camera.stop_recording()
 
 finally:
     cam_socket.close()
-    print("Client (camera) - connection closed")
+    print("\nClient (camera) - connection closed")
