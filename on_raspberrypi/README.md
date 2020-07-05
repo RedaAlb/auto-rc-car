@@ -6,4 +6,5 @@ All these files should be ran on the pi.
 
 - `cam_client.py`
     - Used to send a real-time stream of frames to the computer(host) using a UDP socket "connection".
-    - Since it is a UDP socket, it does not matter which one you run first, the 'cam_server.py' or the 'cam_client.py'.
+- `sensor_client.py`
+    - Used to send the infrared sensor distance data from the pi to the computer using a TCP socket connection.
