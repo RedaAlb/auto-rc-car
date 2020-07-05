@@ -18,22 +18,24 @@ class SensorServer:
         self.sensor_socket.bind((self.host_ip, self.port_sensor))
 
         self.sensor_socket.listen(0)
-        print(f"Server (sensor) - TCP connection opened on {self.host_ip}:{self.port_sensor}, waiting for sensor connection ...")
+        print(f"Server (sensor) - TCP connection opened on {self.host_ip}:{self.port_sensor}, waiting for sensor connection...")
 
         self.sensor_conn = self.sensor_socket.accept()[0]  # sensor connection.
         print("Server (sensor) - Connection made with IR sensor")
 
         # Getting the distance from the Pi at a constant rate (rate is set on the client (the Pi))
         while(not self.stop_sensor_server):
-            data = self.sensor_conn.recv(self.sensor_num_bytes)
+            try:
+                data = self.sensor_conn.recv(self.sensor_num_bytes)
+            except ConnectionAbortedError as err:
+                pass  # For when the connection is interupted from program exit.
+
 
             if(data == 0):
                 break
 
             self.distance = struct.unpack('f', data)[0]
             # print(f"{self.distance:.2f} cm")
-
-        self.close_server()
 
 
     def close_server(self):

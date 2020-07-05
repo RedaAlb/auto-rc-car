@@ -13,13 +13,14 @@ This readme file is to be updated and refined as the projects evolves.
     sent in the second), if that is substantial.
     - [ ] A way to see/find out when and how many frames are lost, is it usually 1 or are they lost consecutively.
 - [x] Add testing folder to this readme file.
-- [ ] Close sensor server and thread more neatly and properly.
+- [x] Close sensor server and thread more neatly and properly.
 - [x] Look into multithreading options.
 - [ ] Add the controller server.
     - [ ] Use multithreading for it.
 - [ ] Make main loop in main.py into a class, and clean up main.py
     - Maybe make a CamHandler class to take care of it, and have instance var of frame that I can access
     in main.py
+- [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
 - [ ] RC Car steering
 - [ ] Add docstrings and document everything.
 
@@ -41,4 +42,5 @@ This readme file is to be updated and refined as the projects evolves.
 - [ ] I need to check if running from root or sub-directories makes a difference or not.
 
 1. Run `main.py`
-2. Run `cam_client.py` on the pi.
+1. Run `cam_client.py` on the pi.
+1. Run `sensor_client.py` on the pi.

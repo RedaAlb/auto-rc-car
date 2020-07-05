@@ -8,7 +8,7 @@ import cv2
 from servers import cam_server
 from servers import sensor_server
 
-RUN_SENSOR_SERVER = False
+RUN_SENSOR_SERVER = True
 
 
 # Getting computer IP address.
@@ -22,8 +22,8 @@ port_sensor = 5001
 server_cam = cam_server.CameraServer(host_ip, port_cam)
 server_cam.start_server()
 
-# Creates and starts a TCP sensor server(socket) to receive the distances from the IR sensor attached to the pi.
-# The server is ran on a thread to keep the connections seperated.
+# Creates and starts a TCP sensor server(socket) to receive the distances from the IR sensor attached
+# to the pi. The server is ran on a thread to keep the connections seperated.
 server_sensor = sensor_server.SensorServer(host_ip, port_sensor)
 
 if RUN_SENSOR_SERVER:
@@ -62,10 +62,14 @@ try:
 
 
         if server_sensor.distance is not 0 and RUN_SENSOR_SERVER:
-            print(f"{server_sensor.distance:.2f} cm")
+            ir_distance = round(server_sensor.distance, 2)  # Infrared red sensor distance
+            frame = cv2.putText(frame, str(ir_distance) + " cm", (10, 34),
+                                cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
+            # print(ir_distance, "cm")
 
 
-        frame = cv2.putText(frame, str(fps) + " FPS", (10, 20), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), thickness=1)
+        frame = cv2.putText(frame, str(fps) + " FPS", (10, 20),
+                            cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
         cv2.imshow("RC Car raw frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
