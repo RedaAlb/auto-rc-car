@@ -4,11 +4,16 @@ import time
 
 import numpy as np
 import cv2
+from queue import Queue
 
 from servers import cam_server
 from servers import sensor_server
+from servers import controller_server
 
-RUN_SENSOR_SERVER = True
+RUN_SENSOR_SERVER = False
+RUN_CONTROLLER_SERVER = True
+
+CAM_PRINT_LOGS = False  # Whether to print camera connection logs
 
 
 # Getting computer IP address.
@@ -17,18 +22,30 @@ host_ip = socket.gethostbyname(host_name)
 
 port_cam = 5000
 port_sensor = 5001
+port_controller = 5002
 
 # Creates and starts a UDP camera server(socket) to receive from the Raspberry Pi.
-server_cam = cam_server.CameraServer(host_ip, port_cam)
+server_cam = cam_server.CameraServer(host_ip, port_cam, CAM_PRINT_LOGS)
 server_cam.start_server()
 
 # Creates and starts a TCP sensor server(socket) to receive the distances from the IR sensor attached
 # to the pi. The server is ran on a thread to keep the connections seperated.
 server_sensor = sensor_server.SensorServer(host_ip, port_sensor)
 
+# Creates and starts a TCP controller server(socket) to control what the motors do on the pi.
+# The server is ran on a thread to keep the connections seperated.
+server_controller = controller_server.ControllerServer(host_ip, port_controller)
+
 if RUN_SENSOR_SERVER:
     sensor_thread = threading.Thread(target=server_sensor.start_server, name="sensor_thread", args=())
     sensor_thread.start()
+
+if RUN_CONTROLLER_SERVER:
+    queue = Queue()  # Used to store/share the controller variable so the motors can be controlled from this main thread.
+
+    controller_thread = threading.Thread(target=server_controller.start_server, name="controller_thread", args=((queue,)))
+    controller_thread.start()
+    
 
 # Variables needed to calculate the FPS achieved on the computer.
 start_time = time.time()
@@ -50,7 +67,7 @@ try:
 
         # If frame data was not successfully received or something went wrong, skip this frame.
         if img_bytes is None or img_bytes == b'' or len(img_bytes) <= 4:
-            print("No frame received")
+            if CAM_PRINT_LOGS: print("No frame received")
             continue
 
         # Converting image bytes to an actual image/frame.
@@ -72,14 +89,33 @@ try:
                             cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
         cv2.imshow("RC Car raw frame", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        key = cv2.waitKey(1)
+
+        if key == ord('q'):
             break
+
+
+        if key == ord('s'):
+            queue.put(-1)
+        elif key == ord('w'):
+            queue.put(1)
+        elif key == ord('a'):
+            queue.put(2)
+        elif key == ord('d'):
+            queue.put(3)
+        elif key == ord('p'):
+            queue.put(0)
+
+    
 
 finally:
     server_cam.close_server()
 
     if RUN_SENSOR_SERVER:
         server_sensor.close_server()
+
+    if RUN_CONTROLLER_SERVER:
+        server_controller.close_server()
 
     cv2.destroyAllWindows()
     
