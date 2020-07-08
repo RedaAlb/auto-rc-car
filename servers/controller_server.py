@@ -11,11 +11,11 @@ class ControllerServer:
         self.port_controller = port_controller
 
         # This will hold what signal to send to pi to tell the motors/pi to do.
-        self.controller = 2  # Can be -1, 1, 2, or 3 -> do nothing, forward, left, right, signals respectively
+        self.controller = -1  # Can be -1, 1, 2, or 3 -> do nothing, forward, left, right, signals respectively. 0 to close connection.
         self.stop_controller_server = False
 
     def start_server(self, queue):
-        self.controller_socket = socket.socket()  # Not in constructor so the socket is on the thread completly.
+        self.controller_socket = socket.socket()  # Not in constructor so the socket is on the thread completely.
         self.controller_socket.bind((self.host_ip, self.port_controller))
 
         self.controller_socket.listen(0)
@@ -28,13 +28,13 @@ class ControllerServer:
         # Sending the currently set control signal to the pi, to tell the motors what to do.
         while(not self.stop_controller_server):
 
-            # controller_in_bytes = struct.pack("i", self.controller)  # Converting to bytes.
-            controller_in_bytes = struct.pack("i", queue.get())  # Converting to bytes.
+            controller_in_bytes = struct.pack("i", queue.get())  # ConvertiWng to bytes.
 
             try:
                 data = self.controller_conn.send(controller_in_bytes)
-            except (ConnectionAbortedError, ConnectionResetError) as err:
-                pass  # For when the connection is interupted from program exit.
+            except (ConnectionAbortedError, ConnectionResetError) as err: # For when the connection is interupted from program exit.
+                # TODO: Send 0 here to close the connection on the client end on the pi, but might not be needed.
+                break
 
             time.sleep(self.CONTROLLER_DELAY)
 
