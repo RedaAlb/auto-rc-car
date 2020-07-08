@@ -15,19 +15,26 @@ This readme file is to be updated and refined as the projects evolves.
 - [x] Add testing folder to this readme file.
 - [x] Close sensor server and thread more neatly and properly.
 - [x] Look into multithreading options.
-- [ ] Add the controller server.
-    - [ ] Use multithreading for it.
-- [ ] Make main loop in main.py into a class, and clean up main.py
+- [x] Add the controller server.
+    - [x] Use multithreading for it.
+- [x] Make main loop in main.py into a class, and clean up main.py
     - Maybe make a CamHandler class to take care of it, and have instance var of frame that I can access
     in main.py
+- [ ] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
 - [ ] RC Car steering
 - [ ] Add docstrings and document everything.
 
 
 ## Files and directories notes
-
 `main.py` is the executable for this project. It combines everything together.
+
+`cam_handler.py` handles anything related to the camera.
+
+`sensor_handler.py` handles anything related to the infrared sensor.
+
+`controller_handler.py` handles anything related to the controller/motors of the car.
+
 
 `/servers`, contains the server files for the camera, sensor, and controller connections between the computer and the Pi.
 
@@ -37,10 +44,9 @@ This readme file is to be updated and refined as the projects evolves.
 
 
 ## To run
-
 - [ ] Add hardware configuration here.
 - [ ] I need to check if running from root or sub-directories makes a difference or not.
 
-1. Run `main.py`
+1. Run `main.py` on the computer.
 1. Run `cam_client.py` on the pi.
-1. Run `sensor_client.py` on the pi.
+1. Run `sensor_control_client.py` on the pi.

@@ -9,8 +9,8 @@ import signal
 pi_ip = "0.0.0.0"
 pi_port = 5010
 
-# host_ip = "192.168.0.17"  #  desktop
-host_ip = "192.168.0.15"    #  laptop
+host_ip = "192.168.0.17"  #  desktop
+# host_ip = "192.168.0.15"    #  laptop
 host_port = 5000
 
 host = (host_ip, host_port)
