@@ -1,14 +1,17 @@
 import socket
-import threading
-import time
-
-import numpy as np
 import cv2
 
-from servers import cam_server
-from servers import sensor_server
 
-RUN_SENSOR_SERVER = True
+import cam_handler
+import sensor_handler
+import controller_handler
+
+RUN_SENSOR_SERVER = 1
+RUN_CONTROLLER_SERVER = 1
+
+DISPLAY_FPS = 1
+DISPLAY_DISTANCE = 1  # Whether to display the distance received from the infrared sensor on the pi.
+CAM_PRINT_LOGS = 0  # Whether to print camera connection logs.
 
 
 # Getting computer IP address.
@@ -17,69 +20,53 @@ host_ip = socket.gethostbyname(host_name)
 
 port_cam = 5000
 port_sensor = 5001
+port_controller = 5002
 
-# Creates and starts a UDP camera server(socket) to receive from the Raspberry Pi.
-server_cam = cam_server.CameraServer(host_ip, port_cam)
-server_cam.start_server()
+handler_cam = cam_handler.CamHandler(host_ip, port_cam, CAM_PRINT_LOGS)
+handler_sensor = sensor_handler.SensorHandler(host_ip, port_sensor, RUN_SENSOR_SERVER)
+handler_controller = controller_handler.ControllerHandler(host_ip, port_controller, RUN_CONTROLLER_SERVER)
 
-# Creates and starts a TCP sensor server(socket) to receive the distances from the IR sensor attached
-# to the pi. The server is ran on a thread to keep the connections seperated.
-server_sensor = sensor_server.SensorServer(host_ip, port_sensor)
 
-if RUN_SENSOR_SERVER:
-    sensor_thread = threading.Thread(target=server_sensor.start_server, name="sensor_thread", args=())
-    sensor_thread.start()
-
-# Variables needed to calculate the FPS achieved on the computer.
-start_time = time.time()
-frame_counter = 0
-fps = 0
 
 try:
     while(True):
-        # Requesting the image bytes from the RC Car (PiCamera)
-        img_bytes = server_cam.get_img_bytes()
-        frame_counter += 1
 
-        # Calculating the fps when 1 second has passed.
-        elapsed_time = time.time() - start_time
-        if(elapsed_time >= 1):
-            fps = round(frame_counter / elapsed_time, 2)
-            frame_counter = 0
-            start_time = time.time()
+        # Requesting/getting the frame from the pi.
+        frame = handler_cam.get_frame()
 
-        # If frame data was not successfully received or something went wrong, skip this frame.
-        if img_bytes is None or img_bytes == b'' or len(img_bytes) <= 4:
-            print("No frame received")
+        if frame is None:  # Ensuring a frame was received and processed successfully.
             continue
 
-        # Converting image bytes to an actual image/frame.
-        np_arr = np.frombuffer(img_bytes, np.uint8)
-        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        if DISPLAY_FPS: frame = handler_cam.display_fps(frame)
+        
 
-        if frame is None:  # Ensuring the decoding was successfull as well (no corruption in image data).
-            continue
-
-
-        if server_sensor.distance is not 0 and RUN_SENSOR_SERVER:
-            ir_distance = round(server_sensor.distance, 2)  # Infrared red sensor distance
-            frame = cv2.putText(frame, str(ir_distance) + " cm", (10, 34),
-                                cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
-            # print(ir_distance, "cm")
+        # Getting the infrared sensor distance from the pi.
+        distance = handler_sensor.get_distance()
+        if DISPLAY_DISTANCE: frame = handler_sensor.display_distance(frame)
 
 
-        frame = cv2.putText(frame, str(fps) + " FPS", (10, 20),
-                            cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
-        cv2.imshow("RC Car raw frame", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.imshow("RC Car frame", frame)
+
+
+
+
+        key = cv2.waitKey(1)
+
+        if key == ord('q'):
             break
 
+        handler_controller.process_key_pressed(key)
+
+        
+
 finally:
-    server_cam.close_server()
+    handler_cam.server_cam.close_server()
 
     if RUN_SENSOR_SERVER:
-        server_sensor.close_server()
+        handler_sensor.server_sensor.close_server()
+    if RUN_CONTROLLER_SERVER:
+        handler_controller.server_controller.close_server()
 
     cv2.destroyAllWindows()
-    
+

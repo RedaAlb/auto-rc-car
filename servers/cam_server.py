@@ -9,9 +9,10 @@ class CameraServer:
 
     UDP_BYTE_LIMIT = 65507
 
-    def __init__(self, host_ip, port_car):
+    def __init__(self, host_ip, port_car, print_logs):
         self.host_ip = host_ip
         self.port_car = port_car
+        self.print_logs = print_logs
 
         self.cam_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
@@ -31,7 +32,7 @@ class CameraServer:
             img_num_bytes = struct.unpack("<L", self.cam_socket.recvfrom(4)[0])[0]
             # print("Frame number of bytes", img_num_bytes)
         except OSError as err1:
-            print("1  OSError, from img number of bytes:", str(err1))
+            if self.print_logs: print("1  OSError, from img number of bytes:", str(err1))
 
         # If no data was received, skip this frame.
         if img_num_bytes == 0:
@@ -47,20 +48,20 @@ class CameraServer:
             try:
                 half1 = self.cam_socket.recvfrom(half1_num_bytes)[0]
             except OSError as err2:
-                print("2  OSError, from half 1:", str(err2))
+                if self.print_logs: print("2  OSError, from half 1:", str(err2))
                 return None
 
             try:
                 half2 = self.cam_socket.recvfrom(half2_num_bytes)[0]
             except OSError as err3:
-                print("3  OSError, from half 2:", str(err3))
+                if self.print_logs: print("3  OSError, from half 2:", str(err3))
                 return None
 
             # Combine both halves to make the full frame.
             try:
                 img_bytes = half1 + half2
             except NameError as err4:
-                print("4  NameError from halves combination:", str(err4))
+                if self.print_logs: print("4  NameError from halves combination:", str(err4))
                 return None
 
         # Size less than UDP_BYTE_LIMIT(65507), avoid unnecessary splitting.
@@ -68,7 +69,7 @@ class CameraServer:
             try:
                 img_bytes = self.cam_socket.recvfrom(img_num_bytes)[0]
             except OSError as err5:
-                print("5  OS Error, from full frame:", str(err5))
+                if self.print_logs: print("5  OS Error, from full frame:", str(err5))
                 return None
 
         return img_bytes

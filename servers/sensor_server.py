@@ -13,7 +13,7 @@ class SensorServer:
         self.stop_sensor_server = False
 
     def start_server(self):
-        self.sensor_socket = socket.socket()  # Not in constructor so the socket is on the thread completly.
+        self.sensor_socket = socket.socket()  # Not in constructor so the socket is on the thread completely.
 
         self.sensor_socket.bind((self.host_ip, self.port_sensor))
 
@@ -30,8 +30,7 @@ class SensorServer:
             except ConnectionAbortedError as err:
                 pass  # For when the connection is interupted from program exit.
 
-
-            if(data == 0):
+            if(data == 0 or data == b''):
                 break
 
             self.distance = struct.unpack('f', data)[0]
