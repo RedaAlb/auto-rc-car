@@ -6,12 +6,15 @@ import cam_handler
 import sensor_handler
 import controller_handler
 
-RUN_SENSOR_SERVER = 1
+RUN_SENSOR_SERVER = 0
 RUN_CONTROLLER_SERVER = 1
 
 DISPLAY_FPS = 1
 DISPLAY_DISTANCE = 1  # Whether to display the distance received from the infrared sensor on the pi.
 CAM_PRINT_LOGS = 0  # Whether to print camera connection logs.
+
+
+COLLECT_DATA = 1  #  Whether to collect/capture data for training.
 
 
 # Getting computer IP address.
@@ -46,27 +49,32 @@ try:
 
 
 
+
         cv2.imshow("RC Car frame", frame)
 
-
-
-
-        key = cv2.waitKey(1)
-
-        if key == ord('q'):
+        if cv2.waitKey(1) == ord('q'):
             break
 
-        handler_controller.process_key_pressed(key)
 
+        # To control the car using the keyboard and to collect training data if needed.
+        handler_controller.process_key_pressed(COLLECT_DATA)  # TODO: Possibly a different name for this method.
+
+        # if COLLECT_DATA:
+        #     handler_controller.collect_data(frame, key)
         
 
 finally:
+
+    if COLLECT_DATA:
+        handler_controller.save_collected_data()
+
     handler_cam.server_cam.close_server()
 
     if RUN_SENSOR_SERVER:
         handler_sensor.server_sensor.close_server()
     if RUN_CONTROLLER_SERVER:
         handler_controller.server_controller.close_server()
+        handler_controller.close_controller_window()
 
     cv2.destroyAllWindows()
 

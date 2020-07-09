@@ -36,7 +36,12 @@ class SensorClient:
         client_socket = socket.socket()
 
         print(f"Client (sensor) - Waiting to connect to {self.host}...")
-        client_socket.connect(self.host)
+
+        try:
+            client_socket.connect(self.host)
+        except TimeoutError as err:  # For when only controller server is ran.
+            pass
+
         print(f"Client (sensor) - Connection made with {self.host}...")
 
         try:
@@ -53,4 +58,4 @@ class SensorClient:
 
         finally:
             client_socket.close()
-            print("Client (sensor) - connection closed")
+            print("Client (sensor) - Connection closed")

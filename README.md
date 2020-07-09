@@ -22,6 +22,7 @@ This readme file is to be updated and refined as the projects evolves.
     in main.py
 - [ ] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
+- [ ] Make a GUI specific class to handle all GUI related stuff.
 - [ ] RC Car steering
 - [ ] Add docstrings and document everything.
 

@@ -22,7 +22,12 @@ class ControllerClient:
         client_socket = socket.socket()
 
         print(f"Client (controller) - Waiting to connect to {self.host}...")
-        client_socket.connect(self.host)
+
+        try:
+            client_socket.connect(self.host)
+        except TimeoutError as err:  # For when only sensor server is ran.
+            pass
+
         print(f"Client (controller) - Connection made with {self.host}...")
 
         try:
