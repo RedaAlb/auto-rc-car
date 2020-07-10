@@ -25,10 +25,9 @@ class ControllerClient:
 
         try:
             client_socket.connect(self.host)
+            print(f"Client (controller) - Connection made with {self.host}...")
         except TimeoutError as err:  # For when only sensor server is ran.
-            pass
-
-        print(f"Client (controller) - Connection made with {self.host}...")
+            print("Client (controller) - Connection timed out")
 
         try:
             while True:
@@ -43,10 +42,10 @@ class ControllerClient:
 
                 direction = struct.unpack('i', data)[0]
 
+                # print("Direction received", direction)
+
                 if direction == 0:  # If the direction received is zero, then close down the connection.
                     break
-                
-                # print("Direction received", direction)
                 
                 if direction is not prev_dir:
                     # print("Direction changed", direction)
@@ -73,6 +72,7 @@ class ControllerClient:
                     else:  # if anything else was sent.
                         eh.motor.one.stop()
                         eh.motor.two.stop()
+                        break
                 
                 #time.sleep(0.01)
 

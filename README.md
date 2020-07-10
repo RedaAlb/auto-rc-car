@@ -20,10 +20,12 @@ This readme file is to be updated and refined as the projects evolves.
 - [x] Make main loop in main.py into a class, and clean up main.py
     - Maybe make a CamHandler class to take care of it, and have instance var of frame that I can access
     in main.py
-- [ ] Close threads properly when program is finished.
+- [x] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
 - [ ] Make a GUI specific class to handle all GUI related stuff.
 - [ ] RC Car steering
+    - [ ] Add ability to collect training data
+    - [ ] Collect data 
 - [ ] Add docstrings and document everything.
 
 
@@ -47,6 +49,7 @@ This readme file is to be updated and refined as the projects evolves.
 ## To run
 - [ ] Add hardware configuration here.
 - [ ] I need to check if running from root or sub-directories makes a difference or not.
+- [ ] Somewhere I need to explain all the keyboard inputs to use, but if I do a GUI, I might not need to.
 
 1. Run `main.py` on the computer.
 1. Run `cam_client.py` on the pi.

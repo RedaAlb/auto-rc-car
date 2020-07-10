@@ -14,7 +14,7 @@ DISPLAY_DISTANCE = 1  # Whether to display the distance received from the infrar
 CAM_PRINT_LOGS = 0  # Whether to print camera connection logs.
 
 
-COLLECT_DATA = 1  #  Whether to collect/capture data for training.
+COLLECT_DATA = 1  # Whether to collect/capture data for training.
 
 
 # Getting computer IP address.
@@ -48,25 +48,21 @@ try:
         if DISPLAY_DISTANCE: frame = handler_sensor.display_distance(frame)
 
 
-
-
         cv2.imshow("RC Car frame", frame)
 
         if cv2.waitKey(1) == ord('q'):
             break
 
 
-        # To control the car using the keyboard and to collect training data if needed.
+        # To control the car using the keyboard and to collect training data when/if needed.
         handler_controller.process_key_pressed(COLLECT_DATA)  # TODO: Possibly a different name for this method.
 
-        # if COLLECT_DATA:
-        #     handler_controller.collect_data(frame, key)
-        
 
 finally:
 
     if COLLECT_DATA:
         handler_controller.save_collected_data()
+
 
     handler_cam.server_cam.close_server()
 
@@ -74,7 +70,7 @@ finally:
         handler_sensor.server_sensor.close_server()
     if RUN_CONTROLLER_SERVER:
         handler_controller.server_controller.close_server()
-        handler_controller.close_controller_window()
+        handler_controller.controller.put(0)  # To exit the controller thread/connection.
 
     cv2.destroyAllWindows()
 
