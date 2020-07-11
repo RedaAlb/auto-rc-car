@@ -25,11 +25,16 @@ class ControllerHandler:
             self.controller_thread = threading.Thread(target=self.server_controller.start_server, name="controller_thread", args=((self.controller,)))
             self.controller_thread.start()
 
-        self.collect_data = False
+        self.is_collecting_data = False  # Whether to collect/capture data for training.
 
-        # Used to store the training data if collecting data.
-        self.frames = []
-        self.labels = []  # Steering for the frame, either 1, 2, 3 -> forward, left, or right, respectively.
+        # Used to store the training data if collecting data. TODO: Combine all these 6 variables into 1 big matrix.
+        self.frames_forward = []
+        self.labels_forward = []  # Steering for the frame, either 1, 2, 3 -> forward, left, or right, respectively.
+
+        self.frames_left, self.labels_left = [], []
+        self.frames_right, self.labels_right = [], []
+
+        self.rec_direction = 1  # What direction to record/collect the frames/labels for 1, 2, 3 -> forward, left, right
 
 
         # TODO: Take care of all GUI stuff in a GUI class. But do this when I find something to replace pygame with.
@@ -40,8 +45,7 @@ class ControllerHandler:
         font = pg.font.Font(None, 32)
         text = font.render("Focus this window to control car", 1, (100, 100, 100))
         display.blit(text, (20, 20))
-
-
+        pg.display.update()
 
     def process_key_pressed(self, frame=None):
         # For controlling the car manually and to collect training data.
@@ -71,53 +75,96 @@ class ControllerHandler:
                 elif event.key == pg.K_UP: self.controller.put(-1)
 
 
-                # On key release so it does not save twice accidentally.
+                # On key release/key-up so nothing happens twice accidentally.
                 if event.key == pg.K_s:  # Save all collected training data.
                     self.save_collected_data()
                     print("Data collection - Training data SAVED")
 
-                if event.key == pg.K_p:  # Pause/unpause data collection
-                    if self.collect_data:
-                        self.collect_data = False
+                elif event.key == pg.K_p:  # Pause/unpause data collection
+                    if self.is_collecting_data:
+                        self.is_collecting_data = False
                         print("Data collection - Collection PAUSED")
                     else:
-                        self.collect_data = True
+                        self.is_collecting_data = True
                         print("Data collection - Collection STARTED")
                 
-                if event.key == pg.K_c:
-                    self.controller.put(0)  # close connection
-
-                if event.key == pg.K_r:
-                    self.frames = []
-                    self.labels = []
+                elif event.key == pg.K_c: self.controller.put(0)  # close controller connection
+    
+                elif event.key == pg.K_r:
+                    self.reset_collected_data()
                     print("Data collection - Collected data RESET")
+                
+                elif event.key == pg.K_1:
+                    self.rec_direction = 1
+                    print("Data collection - Recording for forward(1) steering")
+                elif event.key == pg.K_2:
+                    self.rec_direction = 2
+                    print("Data collection - Recording for left(2) steering")
+                elif event.key == pg.K_3:
+                    self.rec_direction = 3
+                    print("Data collection - Recording for right(3) steering")
 
-        pg.display.update()
-
+                elif event.key == pg.K_i:
+                    self.print_collection_info()
 
 
     def add_data_sample(self, frame, steering_dir):
-        if self.collect_data and frame is not None:
-            self.frames.append(frame)
-            self.labels.append(steering_dir)
-
-            print(len(self.labels))
-
+        if self.is_collecting_data and frame is not None:
+            if self.rec_direction == 1:
+                self.frames_forward.append(frame)
+                self.labels_forward.append(steering_dir)
+                print(f"Data collection - forward(1) mode, added \"{steering_dir}\" sample {len(self.labels_forward)}")
+            elif self.rec_direction == 2:
+                self.frames_left.append(frame)
+                self.labels_left.append(steering_dir)
+                print(f"Data collection - left(2) mode, added \"{steering_dir}\" sample {len(self.labels_left)}")
+            elif self.rec_direction == 3:
+                self.frames_right.append(frame)
+                self.labels_right.append(steering_dir)
+                print(f"Data collection - right(3) mode, added \"{steering_dir}\" sample {len(self.labels_right)}")
 
     def save_collected_data(self):
-        self.collect_data = False
+        self.is_collecting_data = False
         print("Data collection - Collection STOPPED")
 
-        frames_array = np.array(self.frames)
-        labels_array = np.array(self.labels)
+        # Converting to numpy arrays.
+        frames_forward_arr, labels_forward_arr  = np.array(self.frames_forward), np.array(self.labels_forward)
+        frames_left_arr, labels_left_arr  = np.array(self.frames_left), np.array(self.labels_left)
+        frames_right_arr, labels_right_arr  = np.array(self.frames_right), np.array(self.labels_right)
 
-        with open("steering/data/steering_frames.npy", "wb") as file:
-            np.save(file, frames_array)
+        # Saving the numpy arrays/data
+        with open("steering/data/steering_frames_forward.npy", "wb") as file: np.save(file, frames_forward_arr)
+        with open("steering/data/steering_frames_left.npy", "wb") as file: np.save(file, frames_left_arr)
+        with open("steering/data/steering_frames_right.npy", "wb") as file: np.save(file, frames_right_arr)
+
+        with open("steering/data/steering_labels_forward.npy", "wb") as file: np.save(file, labels_forward_arr)
+        with open("steering/data/steering_labels_left.npy", "wb") as file: np.save(file, labels_left_arr)
+        with open("steering/data/steering_labels_right.npy", "wb") as file: np.save(file, labels_right_arr)
+
         
-        with open("steering/data/steering_labels.npy", "wb") as file:
-            np.save(file, labels_array)
+    def reset_collected_data(self):
+        self.frames_forward, self.frames_left, self.frames_right = [], [], []
+        self.labels_forward, self.labels_left, self.labels_right = [], [], []
+
 
     def display_recording(self, frame):
         img_w = frame.shape[1]
-        frame = cv2.putText(frame, "R", (img_w - 30, 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), thickness=3)
+        text = "R" + str(self.rec_direction)
+        frame = cv2.putText(frame, text, (img_w - 50, 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), thickness=3)
         return frame
+
+    
+    def print_collection_info(self):
+
+        n_forward = len(self.frames_forward)
+        n_left = len(self.frames_left)
+        n_right = len(self.frames_right)
+
+        print("\n--------------Data collection info--------------")
+        print("Recording is:", self.is_collecting_data)
+        print("Current recording direction/mode:", self.rec_direction)
+        print("For forward mode,", n_forward, " samples captured so far.")
+        print("For left    mode,", n_left, " samples captured so far.")
+        print("For right   mode,", n_right, " samples captured so far.")
+        print("Total samples captured:", (n_forward + n_left + n_right))
+        print("------------------------------------------------\n")

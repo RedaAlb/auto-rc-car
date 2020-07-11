@@ -24,6 +24,7 @@ This readme file is to be updated and refined as the projects evolves.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
 - [ ] Make a GUI specific class to handle all GUI related stuff.
 - [ ] Find an alternative to pygame......... I don't like it at all. I need a better way to get keyboard input without interfering with cv2.
+- [ ] I might want to make a data collection class to handle all of that to keep seperate from the controller handler.
 - [ ] RC Car steering
     - [x] Add ability to collect training data
     - [ ] Collect data 
@@ -66,4 +67,6 @@ I need to make this section better and put it somewhere more appropriate.
 `[p]` Pause/unpause data collection.<br />
 `[s]` Save data collected.<br />
 `[r]` Reset/delete currently collected data.<br />
+`[i]` Information regarding current data collection state<br />
+`[1]`, `[2]`, `[3]` To choose which steering direction mode to collect data for (forward, left, right).<br />
 `[Arrows]` Control car.<br />

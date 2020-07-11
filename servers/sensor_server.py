@@ -20,8 +20,11 @@ class SensorServer:
         self.sensor_socket.listen(0)
         print(f"Server (sensor) - TCP connection opened on {self.host_ip}:{self.port_sensor}, waiting for sensor connection...")
 
-        self.sensor_conn = self.sensor_socket.accept()[0]  # sensor connection.
-        print("Server (sensor) - Connection made with IR sensor")
+        try:
+            self.sensor_conn = self.sensor_socket.accept()[0]  # sensor connection.
+            print("Server (sensor) - Connection made with IR sensor")
+        except:  # Program finished/exited before connection with the sensor client got established.
+            pass
 
         # Getting the distance from the Pi at a constant rate (rate is set on the client (the Pi))
         while(not self.stop_sensor_server):
@@ -40,5 +43,9 @@ class SensorServer:
     def close_server(self):
         self.stop_sensor_server = True
         self.sensor_socket.close()
-        self.sensor_conn.close()
+
+        try:
+            self.sensor_conn.close()
+        except AttributeError as err:  # When program exits without making a connection to the sensor server.
+            pass
         print("Server (sensor) - Sensor connection closed")
