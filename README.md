@@ -23,9 +23,11 @@ This readme file is to be updated and refined as the projects evolves.
 - [x] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
 - [ ] Make a GUI specific class to handle all GUI related stuff.
+- [ ] Find an alternative to pygame......... I don't like it at all. I need a better way to get keyboard input without interfering with cv2.
 - [ ] RC Car steering
-    - [ ] Add ability to collect training data
+    - [x] Add ability to collect training data
     - [ ] Collect data 
+    - [ ] Implement Auto steering
 - [ ] Add docstrings and document everything.
 
 
@@ -41,10 +43,11 @@ This readme file is to be updated and refined as the projects evolves.
 
 `/servers`, contains the server files for the camera, sensor, and controller connections between the computer and the Pi.
 
-`/on_raspberrypi`, contains the files that are on the raspberry pi and that needs to be ran on the pi.
+`/on_raspberrypi`, contains the files that are on the raspberry pi.
 
 `/testing`, contains sub-directories to test and analyse different components of the project.
 
+`/steering`, contains anything related to the autonomous steering.
 
 ## To run
 - [ ] Add hardware configuration here.
@@ -54,3 +57,13 @@ This readme file is to be updated and refined as the projects evolves.
 1. Run `main.py` on the computer.
 1. Run `cam_client.py` on the pi.
 1. Run `sensor_control_client.py` on the pi.
+
+## Keyboard shortcuts
+
+I need to make this section better and put it somewhere more appropriate.
+
+`[q]` Quit program.<br />
+`[p]` Pause/unpause data collection.<br />
+`[s]` Save data collected.<br />
+`[r]` Reset/delete currently collected data.<br />
+`[Arrows]` Control car.<br />

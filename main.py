@@ -1,20 +1,17 @@
 import socket
 import cv2
 
-
 import cam_handler
 import sensor_handler
 import controller_handler
 
-RUN_SENSOR_SERVER = 0
+RUN_SENSOR_SERVER = 1
 RUN_CONTROLLER_SERVER = 1
+
 
 DISPLAY_FPS = 1
 DISPLAY_DISTANCE = 1  # Whether to display the distance received from the infrared sensor on the pi.
 CAM_PRINT_LOGS = 0  # Whether to print camera connection logs.
-
-
-COLLECT_DATA = 1  # Whether to collect/capture data for training.
 
 
 # Getting computer IP address.
@@ -29,40 +26,40 @@ handler_cam = cam_handler.CamHandler(host_ip, port_cam, CAM_PRINT_LOGS)
 handler_sensor = sensor_handler.SensorHandler(host_ip, port_sensor, RUN_SENSOR_SERVER)
 handler_controller = controller_handler.ControllerHandler(host_ip, port_controller, RUN_CONTROLLER_SERVER)
 
-
-
 try:
     while(True):
 
         # Requesting/getting the frame from the pi.
-        frame = handler_cam.get_frame()
+        raw_frame = handler_cam.get_frame()
 
-        if frame is None:  # Ensuring a frame was received and processed successfully.
+        if raw_frame is None:  # Ensuring a frame was received and processed successfully.
             continue
 
+        frame = raw_frame.copy()  # Creating a copy which I can alter, while still having the raw frame.
+
         if DISPLAY_FPS: frame = handler_cam.display_fps(frame)
-        
+
 
         # Getting the infrared sensor distance from the pi.
         distance = handler_sensor.get_distance()
         if DISPLAY_DISTANCE: frame = handler_sensor.display_distance(frame)
 
 
-        cv2.imshow("RC Car frame", frame)
-
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-
         # To control the car using the keyboard and to collect training data when/if needed.
-        handler_controller.process_key_pressed(COLLECT_DATA)  # TODO: Possibly a different name for this method.
+        # TODO: Possibly put this if/else in a method in controller handler, and call that method to clear up main.py.
+        if handler_controller.collect_data:
+            handler_controller.process_key_pressed(raw_frame)
+            frame = handler_controller.display_recording(frame)  # To display whether currently in data collection(recording) mode or not.
+        else:
+            handler_controller.process_key_pressed()
 
+        cv2.imshow("RC Car frames", frame)
+        
 
 finally:
-
-    if COLLECT_DATA:
-        handler_controller.save_collected_data()
-
 
     handler_cam.server_cam.close_server()
 

@@ -19,8 +19,11 @@ class ControllerServer:
         self.controller_socket.listen(0)
         print(f"Server (controller) - TCP connection opened on {self.host_ip}:{self.port_controller}, waiting for controller connection...")
 
-        self.controller_conn = self.controller_socket.accept()[0]
-        print("Server (controller) - Connection made with Pi motors")
+        try:
+            self.controller_conn = self.controller_socket.accept()[0]
+            print("Server (controller) - Connection made with Pi motors")
+        except:  # Program finished/exited before connection with the controller client got established.
+            pass
 
 
         # Sending the currently set control signal to the pi, to tell the motors what to do.
@@ -33,7 +36,7 @@ class ControllerServer:
 
             try:
                 data = self.controller_conn.send(controller_in_bytes)
-            except (ConnectionAbortedError, ConnectionResetError) as err: # For when the connection is interupted from program exit.
+            except (ConnectionAbortedError, ConnectionResetError, OSError) as err: # For when the connection is interupted from program exit.
                 break
 
 

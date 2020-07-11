@@ -81,4 +81,4 @@ class ControllerClient:
             eh.motor.two.stop()
             
             client_socket.close()
-            print("Client (controller) - connection closed")
+            print("Client (controller) - Connection closed")
