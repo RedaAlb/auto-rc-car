@@ -28,5 +28,5 @@ class SensorHandler:
             return frame
         else:
             dist = round(dist, 2)
-            frame = cv2.putText(frame, str(dist) + " cm", (10, 34), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
+            frame = cv2.putText(frame, str(dist) + " cm", (10, 34), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), thickness=2)
             return frame
