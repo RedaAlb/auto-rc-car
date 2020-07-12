@@ -49,8 +49,7 @@ try:
             break
 
         # To control the car using the keyboard and to collect training data when/if needed.
-        # TODO: Possibly put this if/else in a method in controller handler, and call that method to clear up main.py.
-        if handler_controller.collect_data:
+        if handler_controller.is_collecting_data:
             handler_controller.process_key_pressed(raw_frame)
             frame = handler_controller.display_recording(frame)  # To display whether currently in data collection(recording) mode or not.
         else:
