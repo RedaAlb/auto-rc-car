@@ -30,7 +30,7 @@ class ControllerServer:
         while(not self.stop_controller_server):
 
             # This will hold what signal to send to pi to tell the motors/pi to do.
-            steering_dir = controller.get()  # Can be -1, 0, 1, 2, or 3 -> do nothing, close connection, forward, left, right, signals respectively.
+            steering_dir = controller.get()  # Can be -1, 0, 1, 2, 3, 4 -> do nothing, close connection, forward, left, right, reverse, signals respectively.
             
             controller_in_bytes = struct.pack("i", steering_dir)  # Converting to bytes.
 
