@@ -21,8 +21,8 @@ SECONDS_TO_RECORD = 2000
 
 
 FPS = 30
-RESOLUTIONS = ["320x240", "640x480", "1280x720"]  # Please note for larger resolutions, splitting in half might then not be enough.
-RES_INDEX = 0
+RESOLUTIONS = ["320x240", "640x480", "1640x922"]  # Please note for larger resolutions, splitting in half might then not be enough.
+RES_INDEX = 1  # Which resolution to use.
 
 
 # Creating the UDP socket and binding it locally to the pi.

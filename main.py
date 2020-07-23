@@ -5,7 +5,7 @@ import cam_handler
 import sensor_handler
 import controller_handler
 
-RUN_SENSOR_SERVER = 1
+RUN_SENSOR_SERVER = 0
 RUN_CONTROLLER_SERVER = 1
 
 

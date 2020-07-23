@@ -27,8 +27,15 @@ This readme file is to be updated and refined as the projects evolves.
 - [ ] I might want to make a data collection class to handle all of that to keep seperate from the controller handler.
 - [ ] RC Car steering
     - [x] Add ability to collect training data
-    - [ ] Collect data 
-    - [ ] Implement Auto steering
+    - [x] Collect data 
+    - [ ] Create and train Auto steering module.
+    - [ ] Extract road features
+        - [ ] Mask of the road using only edges of the road.
+        - [ ] Centre of lane
+    - [ ] Train a CNN on only the masks to find optimal CNN for masks, then combine with full frame CNN.
+    - [ ] Add centre of lane to fully connected layer (FCL) at the end to create 1 big network to combine all features.
+    - So network will consists of 2 image inputs, frame and mask, and 1 int at the FCL.
+- [ ] Train a CNN to detect traffic signs, where the prediction is [x, y, w, h] of the bounding box.
 - [ ] Add docstrings and document everything.
 
 

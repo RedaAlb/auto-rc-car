@@ -18,7 +18,7 @@ class ControllerHandler:
         self.server_controller = controller_server.ControllerServer(host_ip, port_controller)
 
         # Used to store/share the controller variable in a queue so the motors can be controlled from the main thread.
-        self.controller = Queue()  # Can be -1, 0, 1, 2, or 3 -> do nothing, close connection, forward, left, right, signals respectively.
+        self.controller = Queue()  # Can be -1, 0, 1, 2, 3, 4 -> do nothing, close connection, forward, left, right, reverse, signals respectively.
         self.controller.put(-1)
 
         if run_controller_server:
@@ -36,6 +36,7 @@ class ControllerHandler:
 
         self.rec_direction = 1  # What direction to record/collect the frames/labels for 1, 2, 3 -> forward, left, right
 
+        self.down_pressed = False  # Whether the down arrow key is pressed (reversing).
 
         # TODO: Take care of all GUI stuff in a GUI class. But do this when I find something to replace pygame with.
         pg.init()
@@ -54,18 +55,28 @@ class ControllerHandler:
 
         # This if statement separation/order is done for smooth steering using the keyboard.
         if keys[pg.K_LEFT]:      # steer left
-            self.controller.put(2)
-            self.add_data_sample(frame, 2)
+            if self.down_pressed:
+                self.controller.put(5)  # backwards left
+            else:
+                self.controller.put(2)
+                self.add_data_sample(frame, 2)
 
         elif keys[pg.K_RIGHT]:   # steer right
-            self.controller.put(3)
-            self.add_data_sample(frame, 3)
-            
+            if self.down_pressed:
+                self.controller.put(6)  # backwards right
+            else:
+                self.controller.put(3)
+                self.add_data_sample(frame, 3)
+                
         elif keys[pg.K_UP]:      # go forward
             self.controller.put(1)
             self.add_data_sample(frame, 1)
 
         elif keys[pg.K_DOWN]:
+            self.down_pressed = True
+            self.controller.put(4)  # reverse
+
+        elif keys[pg.K_HASH]:
             self.controller.put(-1) # stop, do nothing
 
         for event in pg.event.get():
@@ -73,6 +84,9 @@ class ControllerHandler:
                 if event.key == pg.K_LEFT: self.controller.put(-1)
                 elif event.key == pg.K_RIGHT: self.controller.put(-1)
                 elif event.key == pg.K_UP: self.controller.put(-1)
+                elif event.key == pg.K_DOWN:
+                    self.down_pressed = False
+                    self.controller.put(-1)
 
 
                 # On key release/key-up so nothing happens twice accidentally.

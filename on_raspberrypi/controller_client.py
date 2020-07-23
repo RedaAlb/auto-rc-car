@@ -69,7 +69,19 @@ class ControllerClient:
                         eh.motor.one.forward(self.SPEED)
                         eh.motor.two.stop()
 
-                    else:  # if anything else was sent.
+                    elif (direction == 4):  # backwards
+                        eh.motor.one.backwards(self.SPEED)
+                        eh.motor.two.backwards(self.SPEED)
+
+                    elif (direction == 5):  # backwards left
+                        eh.motor.one.stop()
+                        eh.motor.two.backwards(self.SPEED)
+
+                    elif (direction == 6):  # backwards left
+                        eh.motor.one.backwards(self.SPEED)
+                        eh.motor.two.stop()
+
+                    else:  # if anything else was sent stop the car.
                         eh.motor.one.stop()
                         eh.motor.two.stop()
                         break
