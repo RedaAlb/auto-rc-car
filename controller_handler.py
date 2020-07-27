@@ -27,7 +27,7 @@ class ControllerHandler:
 
         self.is_collecting_data = False  # Whether to collect/capture data for training.
 
-        # Used to store the training data if collecting data. TODO: Combine all these 6 variables into 1 big matrix.
+        # Used to store the training data if collecting data.
         self.frames_forward = []
         self.labels_forward = []  # Steering for the frame, either 1, 2, 3 -> forward, left, or right, respectively.
 
@@ -124,6 +124,10 @@ class ControllerHandler:
 
     def add_data_sample(self, frame, steering_dir):
         if self.is_collecting_data and frame is not None:
+
+            # Converting the frame to RGB.
+            frame = frame[:, :, ::-1]
+
             if self.rec_direction == 1:
                 self.frames_forward.append(frame)
                 self.labels_forward.append(steering_dir)
