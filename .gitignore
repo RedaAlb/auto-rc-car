@@ -5,3 +5,6 @@ servers/__pycache__/*
 .vscode
 steering/data/*
 steering/data
+steering/saved_models
+steering/logs
+steering/_model_notes.md

@@ -1,8 +1,8 @@
 # Auto-RC-Car
 
-This is my MSc Artificial Intelligence project.
+This is my MSc Artificial Intelligence project. A paper associated with this project will be available here on project completion.
 
-This readme file is to be updated and refined as the projects evolves.
+This readme file is to be updated and refined at the end of the project.
 
 
 ## To do next
@@ -28,14 +28,21 @@ This readme file is to be updated and refined as the projects evolves.
 - [ ] RC Car steering
     - [x] Add ability to collect training data
     - [x] Collect data 
-    - [ ] Create and train Auto steering module.
-    - [ ] Extract road features
-        - [ ] Mask of the road using only edges of the road.
-        - [ ] Centre of lane
-    - [ ] Train a CNN on only the masks to find optimal CNN for masks, then combine with full frame CNN.
-    - [ ] Add centre of lane to fully connected layer (FCL) at the end to create 1 big network to combine all features.
-    - So network will consists of 2 image inputs, frame and mask, and 1 int at the FCL.
-- [ ] Train a CNN to detect traffic signs, where the prediction is [x, y, w, h] of the bounding box.
+    - [x] Create and train Auto steering module.
+    - [x] Extract road features
+        - [x] Mask of the road using only edges of the road.
+        - [x] Centre of lane
+    - [x] Train a CNN on only the masks to find optimal CNN for masks, then combine with full frame CNN.
+    - [x] Add centre of lane to fully connected layer (FCL) at the end to create 1 big network to combine all features.
+        - So network will consists of 2 image inputs, frame and mask, and 1 integer at the final fully connected layer.
+    - [x] Once the forward model is trained and works well, train the left and right models.
+- [ ] Create and train sign detector.
+    - [ ] Apply it to the RC Car.
+- [ ] Create and train a CNN to detect traffic signs, where the prediction is [x, y, w, h] of the bounding box.
+- [ ] Try to make the car map the road.
+    - [ ] Ability to map the road into a 2D canvas as the car moves around the road in real-time.
+    - [ ] Ability to select any position on the road on the 2D canvas and the car to navigate to that position.
+- [ ] Real-time graph of the FPS, to track when/if things go wrong.
 - [ ] Add docstrings and document everything.
 
 
@@ -55,25 +62,27 @@ This readme file is to be updated and refined as the projects evolves.
 
 `/testing`, contains sub-directories to test and analyse different components of the project.
 
-`/steering`, contains anything related to the autonomous steering.
+`/steering`, contains anything related to the autonomous steering/driving.
 
 ## To run
-- [ ] Add hardware configuration here.
-- [ ] I need to check if running from root or sub-directories makes a difference or not.
-- [ ] Somewhere I need to explain all the keyboard inputs to use, but if I do a GUI, I might not need to.
 
-1. Run `main.py` on the computer.
-1. Run `cam_client.py` on the pi.
-1. Run `sensor_control_client.py` on the pi.
+TODO:
+- Add hardware configuration here.
+- Somewhere I need to explain all the keyboard inputs to use, but if I do a GUI, I might not need to.
+- Add exact steps to re-produce everything. Also show how to run for specific tasks, e.g. to train model, collect data, etc.
+
 
 ## Keyboard shortcuts
 
-I need to make this section better and put it somewhere more appropriate.
+TODO: I need to make this section better and put it somewhere more appropriate.
 
-`[q]` Quit program.<br />
-`[p]` Pause/unpause data collection.<br />
-`[s]` Save data collected.<br />
-`[r]` Reset/delete currently collected data.<br />
-`[i]` Information regarding current data collection state<br />
-`[1]`, `[2]`, `[3]` To choose which steering direction mode to collect data for (forward, left, right).<br />
-`[Arrows]` Control car.<br />
+`[q]` Quit program.<br>
+`[p]` Pause/unpause data collection.<br>
+`[s]` Save data collected.<br>
+`[r]` Reset/delete currently collected data.<br>
+`[i]` Information regarding current data collection state<br>
+`[1]`, `[2]`, `[3]` To choose which steering direction mode to collect data for (forward, left, right). Note that if not in data collection mode, `[1]`, `[2]`, `[3]` will be used to change which model to use for autonomous driving.<br>
+`[0]` Add one lap, used to track what lap you are in when collecting data for convenience.<br>
+`[-]` Reset the laps done to zero.<br>
+`[Arrow keys]` Control car.<br>
+`[a]` Toggle between autonomous mode and manual driving.<br>

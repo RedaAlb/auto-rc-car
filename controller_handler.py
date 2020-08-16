@@ -27,7 +27,7 @@ class ControllerHandler:
 
         self.is_collecting_data = False  # Whether to collect/capture data for training.
 
-        # Used to store the training data if collecting data. TODO: Combine all these 6 variables into 1 big matrix.
+        # Used to store the training data if collecting data.
         self.frames_forward = []
         self.labels_forward = []  # Steering for the frame, either 1, 2, 3 -> forward, left, or right, respectively.
 
@@ -37,6 +37,11 @@ class ControllerHandler:
         self.rec_direction = 1  # What direction to record/collect the frames/labels for 1, 2, 3 -> forward, left, right
 
         self.down_pressed = False  # Whether the down arrow key is pressed (reversing).
+
+        self.laps_done = 0  # To keep track of how many laps are done during data collection.
+
+        self.autonomous_mode = False  # Whether the car should drive autonomously or not.
+        self.auto_direction = 1  # Which model to use for steering. 1,2,3 -> forward, left, or right model.
 
         # TODO: Take care of all GUI stuff in a GUI class. But do this when I find something to replace pygame with.
         pg.init()
@@ -109,21 +114,52 @@ class ControllerHandler:
                     print("Data collection - Collected data RESET")
                 
                 elif event.key == pg.K_1:
-                    self.rec_direction = 1
-                    print("Data collection - Recording for forward(1) steering")
+                    if self.is_collecting_data:
+                        self.rec_direction = 1
+                        print("Data collection - Recording for forward(1) steering")
+                    else:
+                        self.auto_direction = 1  # If not in collection mode, use 1,2,3 numbers to change model to use rather than changing recording direction.
+                        print("Autonomous mode - Now using the forward model for driving.")
+
                 elif event.key == pg.K_2:
-                    self.rec_direction = 2
-                    print("Data collection - Recording for left(2) steering")
+                    if self.is_collecting_data:
+                        self.rec_direction = 2
+                        print("Data collection - Recording for left(2) steering")
+                    else:
+                        self.auto_direction = 2
+                        print("Autonomous mode - Now using the left model for driving.")
+
                 elif event.key == pg.K_3:
-                    self.rec_direction = 3
-                    print("Data collection - Recording for right(3) steering")
+                    if self.is_collecting_data:
+                        self.rec_direction = 3
+                        print("Data collection - Recording for right(3) steering")
+                    else:
+                        self.auto_direction = 3
+                        print("Autonomous mode - Now using the right model for driving.")
 
                 elif event.key == pg.K_i:
                     self.print_collection_info()
 
+                elif event.key == pg.K_0:
+                    self.laps_done += 1
+                    print("Data collection - lap added, done", self.laps_done, "laps")
+                elif event.key == pg.K_MINUS:
+                    self.laps_done = 0
+                    print("Data collection - laps reset")
+
+                elif event.key == pg.K_a:
+                    self.autonomous_mode = not self.autonomous_mode
+                    self.controller.put(-1)
+                    print(f"Autonomous mode - {self.autonomous_mode}")
+
+
 
     def add_data_sample(self, frame, steering_dir):
         if self.is_collecting_data and frame is not None:
+
+            # Converting the frame to RGB since openCV uses BGR format.
+            frame = frame[:, :, ::-1]
+
             if self.rec_direction == 1:
                 self.frames_forward.append(frame)
                 self.labels_forward.append(steering_dir)
@@ -177,6 +213,7 @@ class ControllerHandler:
         print("\n--------------Data collection info--------------")
         print("Recording is:", self.is_collecting_data)
         print("Current recording direction/mode:", self.rec_direction)
+        print("On Lap:", self.laps_done)
         print("For forward mode,", n_forward, " samples captured so far.")
         print("For left    mode,", n_left, " samples captured so far.")
         print("For right   mode,", n_right, " samples captured so far.")
