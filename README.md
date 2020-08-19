@@ -36,8 +36,8 @@ This readme file is to be updated and refined at the end of the project.
     - [x] Add centre of lane to fully connected layer (FCL) at the end to create 1 big network to combine all features.
         - So network will consists of 2 image inputs, frame and mask, and 1 integer at the final fully connected layer.
     - [x] Once the forward model is trained and works well, train the left and right models.
-- [ ] Create and train sign detector.
-    - [ ] Apply it to the RC Car.
+- [x] Create and train sign detector.
+    - [x] Apply it to the RC Car.
 - [ ] Create and train a CNN to detect traffic signs, where the prediction is [x, y, w, h] of the bounding box.
 - [ ] Try to make the car map the road.
     - [ ] Ability to map the road into a 2D canvas as the car moves around the road in real-time.
