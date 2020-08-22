@@ -6,8 +6,8 @@ import numpy as np
 class CircleDetector:
     # HoughCircles arguments. These were found by experimenting with different values.
     min_dist = 100  # Minimum distance between the centres of the detected circles.
-    p1 = 386        # Method specific parameter
-    p2 = 35         # Method specific parameter
+    p1 = 386 #266   # Method specific parameter
+    p2 = 35 #52     # Method specific parameter
     min_r = 7       # Minimum radius of circles to be detected.
     max_r = 26      # Maximum radius.
     dp = 0.1        # Inverse ratio of the accumulator resolution to the image resolution.
@@ -24,6 +24,7 @@ class CircleDetector:
             cv2.createTrackbar("p2", "trackbars", self.p2, 500, self.nothing)
             cv2.createTrackbar("min_r", "trackbars", self.min_r, 200, self.nothing)
             cv2.createTrackbar("max_r", "trackbars", self.max_r, 200, self.nothing)
+
 
     def nothing(self, x):  # For the trackbars.
         pass
@@ -50,9 +51,6 @@ class CircleDetector:
                                    param2=self.p2,
                                    minRadius=self.min_r,
                                    maxRadius=self.max_r)
-
-
-        
         
         # If no circles were found.
         if circles is None:

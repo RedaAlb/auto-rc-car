@@ -9,7 +9,10 @@ from steering.data_sequence import DataSequence  # steering. is needed since thi
 
 class AutoSteeringHandler:
 
-    def __init__(self):
+    def __init__(self, obstacle_distance, tl_stop_distance):
+        self.obstacle_distance = obstacle_distance
+        self.tl_stop_distance = tl_stop_distance
+        self.is_green_light = True  # Keeps track of the last detected traffic light colour, 1(red), 2(green).
 
         self.data_seq = DataSequence()
 
@@ -21,7 +24,24 @@ class AutoSteeringHandler:
 
     
 
-    def predict_steering(self, frame, auto_direction):
+    def predict_steering(self, frame, auto_direction, sensor_distance, detected_light, tl_dist_to_edge):
+
+        # If an obstacle is in front of the car, ignore everything else and stop the car.
+        if sensor_distance <= self.obstacle_distance:
+            return -1
+
+        # If a red light is detected and is close to the edge, then also stop the car.
+        if detected_light == 1 and tl_dist_to_edge <= self.tl_stop_distance:
+            self.is_green_light = False
+
+        # Checking if green light is detected, the +20 is to allow for larger green light detection area.
+        elif detected_light == 2 and tl_dist_to_edge <= self.tl_stop_distance + 20:
+            self.is_green_light = True
+
+        if not self.is_green_light:
+            return -1
+            
+
         # I arbitrary chose the forward model for the pre-processing checks because all three models will have the same input.
         processed_input = self.data_seq.pre_process_input(frame, self.f_model.inputs)
 

@@ -25,6 +25,9 @@ class SignDetector:
         self.sign_name = ""
         self.sign_dist = -1
 
+        # This will store the previously detected sign name, since a sign needs to be detected twice in two consecutive frames.
+        self.prev_sign_name = ""
+
         # This queue is used to communicate between the main thread (main.py) and the sign detection thread below.
         self.frame_queue = Queue(maxsize=1)  # maxsize=1 to ensure only one frame and is the latest frame is in the queue.
 
@@ -52,10 +55,8 @@ class SignDetector:
 
     # Preprocessing for the input to the model.
     def preprocessing(self, img):
-
         img = np.asarray(img)
         img = cv2.resize(img, (32, 32))
-
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = cv2.equalizeHist(img)
         
@@ -68,37 +69,45 @@ class SignDetector:
     # Getting all circle patches detected and passing them into the model for classification.
     def make_prediction(self, frame, all_circles, display_sign_info):
 
-        if all_circles == None:  # If no circles were detected.
-            return -1, "", -1
+        if all_circles is not None:  # If circle(s) were detected.
+            for circle in all_circles:
+                # Getting the top left corner and bottom right corner coordinates of the rectangle that the circle is in (sign patch/bounding box).
+                top_l_corner, bottom_r_corner = circle.get_rect_coords()
 
-        for circle in all_circles:
-            # Getting the top left corner and bottom right corner coordinates of the rectangle that the circle is in (sign patch/bounding box).
-            top_l_corner, bottom_r_corner = circle.get_rect_coords()
+                # Cutting/cropping out the sign as a rectangle/patch to feed into the model for classification.
+                sign_patch = frame[top_l_corner[1]:bottom_r_corner[1], top_l_corner[0]:bottom_r_corner[0]]
 
-            # Cutting/cropping out the sign as a rectangle/patch to feed into the model for classification.
-            sign_patch = frame[top_l_corner[1]:bottom_r_corner[1], top_l_corner[0]:bottom_r_corner[0]]
+                try:  # For when one of the corner coordinates is out of bound of the frame (when sign is at the very edge).
+                    sign_patch = self.preprocessing(sign_patch)
+                except:
+                    break
 
-            try:  # For when one of the corner coordinates is out of bound of the frame (when sign is at the very edge).
-                sign_patch = self.preprocessing(sign_patch)
-            except:
-                return -1, "", -1
+                # Making a prediction using the trained sign detection model.
+                class_index = self.model.predict_classes(sign_patch)[0]
+                sign_name = self.labels.iloc[class_index][1]
+                sign_dist = circle.get_dist_to_edge(frame.shape[1])
 
-            # Making a prediction using the trained sign detection model.
-            class_index = self.model.predict_classes(sign_patch)[0]
-            sign_name = self.labels.iloc[class_index][1]
-            sign_dist = circle.get_dist_to_edge(frame.shape[1])
+                if sign_name != self.prev_sign_name:
+                    self.prev_sign_name = sign_name
+                    break
 
-            # Displaying the sign bounding box, distance to edge, and the sign name on the frame.
-            frame = circle.draw_sign_info(frame, top_l_corner, bottom_r_corner, sign_dist, sign_name)
+                if display_sign_info:
+                    # Displaying the sign bounding box, distance to edge, and the sign name on the frame.
+                    frame = circle.draw_sign_info(frame, top_l_corner, bottom_r_corner, sign_dist, sign_name)
 
-            if frame is not None and display_sign_info:
-                cv2.imshow("RC Car frame with sign detected", frame)
-
+                cv2.imshow("RC Car camera feed", frame)
                 cv2.waitKey(1)
 
-            # Here I am simply returning the first detected circle to not slow down, since making multiple predictions would require significantly
-            # more time. Only one sign is required to be detected at once. However, this can be easily expanded later.
-            return class_index, sign_name, sign_dist
+                # Here I am simply returning the first detected circle to not slow down, since making multiple predictions would require significantly more time.
+                # Only one sign is required to be detected at once. However, this can be easily expanded later if multiple signs needs to be detected at once.
+                return class_index, sign_name, sign_dist
+        else:
+            self.prev_sign_name = ""   # Resetting the previously detected sign to no sign.
+
+        # The waitKey(1) is so if the trackbars window were to be displayed, it does crash, and you are still able
+        # to use the trackbars even if no circles were detected to "fine-tune" the values.
+        cv2.waitKey(1)
+        return -1, "", -1
     
     def get_sign_direction(self):
         if   self.sign_name == "Ahead only": return 1         # Forward

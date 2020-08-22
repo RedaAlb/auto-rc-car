@@ -1,6 +1,6 @@
 # The steering directory
 
-This folder contains all the files for the autonomous steering/driving.
+This directory contains all the files for the autonomous steering/driving.
 
 `exploring_steering_data.ipynb`, used to explore and examine the collected training data for the car steering, making sure the collected data is as expected.
 

@@ -1,5 +1,6 @@
 import threading
 from queue import Queue
+import time
 
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -109,8 +110,6 @@ class ControllerHandler:
                     else:
                         self.is_collecting_data = True
                         print("Data collection - Collection STARTED")
-                
-                elif event.key == pg.K_c: self.controller.put(0)  # close controller connection
     
                 elif event.key == pg.K_r:
                     self.reset_collected_data()
@@ -154,6 +153,11 @@ class ControllerHandler:
                     self.autonomous_mode = not self.autonomous_mode
                     self.controller.put(-1)
                     print(f"Autonomous mode - {self.autonomous_mode}")
+
+                elif event.key == pg.K_c:
+                    if not os.path.exists("captured_images"): os.makedirs("captured_images")
+                    file_name = int(time.time())
+                    cv2.imwrite(f"captured_images/{file_name}.jpg", frame)
 
 
 
@@ -201,9 +205,11 @@ class ControllerHandler:
 
 
     def display_recording(self, frame):
-        img_w = frame.shape[1]
-        text = "R" + str(self.rec_direction)
-        frame = cv2.putText(frame, text, (img_w - 50, 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), thickness=3)
+        if self.is_collecting_data:
+            img_w = frame.shape[1]
+            text = "R" + str(self.rec_direction)
+            frame = cv2.putText(frame, text, (img_w - 50, 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), thickness=3)
+        
         return frame
 
     
