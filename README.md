@@ -22,9 +22,7 @@ This readme file is to be updated and refined at the end of the project.
     in main.py
 - [x] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
-- [ ] Make a GUI specific class to handle all GUI related stuff.
-- [ ] Find an alternative to pygame......... I don't like it at all. I need a better way to get keyboard input without interfering with cv2.
-- [ ] I might want to make a data collection class to handle all of that to keep seperate from the controller handler.
+- [x] Make a GUI specific class to handle all GUI related stuff.
 - [x] RC Car steering
     - [x] Add ability to collect training data
     - [x] Collect data 
@@ -70,6 +68,7 @@ This readme file is to be updated and refined at the end of the project.
 
 `/traffic_light_detection`, contains anything related to the traffic light detection.
 
+`/gui`, contains all the files related to creating the gui, including the road mapping.
 
 ## To run
 

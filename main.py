@@ -14,6 +14,9 @@ from sign_detection.circle_detector import CircleDetector
 from traffic_light_detection.traffic_light_detector import TrafficLightDetector
 
 
+from gui.gui import GUI
+
+
 RUN_SENSOR_SERVER = 1
 RUN_CONTROLLER_SERVER = 1
 
@@ -50,6 +53,8 @@ handler_cam = cam_handler.CamHandler(host_ip, port_cam, CAM_PRINT_LOGS)
 handler_sensor = sensor_handler.SensorHandler(host_ip, port_sensor, RUN_SENSOR_SERVER)
 handler_controller = controller_handler.ControllerHandler(host_ip, port_controller, RUN_CONTROLLER_SERVER)
 
+
+gui = GUI(handler_controller)
 
 
 handler_auto = auto_steering_handler.AutoSteeringHandler(OBSTACLE_DISTANCE, TL_STOP_DISTANCE)  # Autonomous driving handler.
@@ -113,7 +118,7 @@ try:
 
 
         # To control the car using the keyboard, collect training data when needed, and general keyboard input.
-        handler_controller.process_key_pressed(raw_frame)
+        gui.process_key_pressed(raw_frame)
         frame = handler_controller.display_recording(frame)  # To display whether currently in data collection(recording) mode or not.
 
         cv2.imshow("RC Car raw cam feed", raw_frame)
