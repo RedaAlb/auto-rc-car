@@ -40,6 +40,7 @@ This readme file is to be updated and refined at the end of the project.
     - [x] This was not done at the moment, but a Haar cascade detector was used instead. If time at the end, I will attempt
     to create a CNN to detect traffic lights.
 - [ ] Try to make the car map the road.
+    - [x] Map the car movement virtually.
     - [ ] Ability to map the road into a 2D canvas as the car moves around the road in real-time.
     - [ ] Ability to select any position on the road on the 2D canvas and the car to navigate to that position.
 - [ ] Real-time graph of the FPS, to track when/if things go wrong.
@@ -92,4 +93,5 @@ TODO: I need to make this section better and put it somewhere more appropriate.
 `[-]` Reset the laps done to zero.<br>
 `[Arrow keys]` Control car.<br>
 `[a]` Toggle between autonomous mode and manual driving.<br>
+`[#]` Stop the car.<br>
 `[c]` Capture and save current frame/image.<br>

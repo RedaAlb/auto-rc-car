@@ -5,6 +5,7 @@ import pygame as pg
 import cv2
 import time
 
+from gui.car import Car
 
 class GUI:
 
@@ -15,16 +16,22 @@ class GUI:
         self.canvas_bg = (255, 255, 255)
 
         pg.init()
-        display = pg.display.set_mode(self.canvas_size)
-        display.fill(self.canvas_bg)
+        self.canvas = pg.display.set_mode(self.canvas_size)
+        self.canvas.fill(self.canvas_bg)
 
         font = pg.font.Font(None, 32)
         text = font.render("Focus this window to use keyboard shortcuts", 1, (100, 100, 100))
-        display.blit(text, (20, 20))
+        self.canvas.blit(text, (20, 20))
+
+        pg.display.flip()
         pg.display.update()
 
 
+        # Car object that represents the car virtually for mapping of the rc car and the road.
+        self.car = Car()
+
     def process_key_pressed(self, frame=None):
+
         keys = pg.key.get_pressed()
 
         # This if statement separation/order is done for smooth steering using the keyboard.
@@ -35,16 +42,22 @@ class GUI:
                 self.c_ref.controller.put(2)
                 self.c_ref.add_data_sample(frame, 2)
 
+                self.car.steering.put(2)  # For the virtual car.
+
         elif keys[pg.K_RIGHT]:   # steer right
             if self.c_ref.down_pressed:
                 self.c_ref.controller.put(6)  # backwards right
             else:
                 self.c_ref.controller.put(3)
                 self.c_ref.add_data_sample(frame, 3)
+
+                self.car.steering.put(3)
                 
         elif keys[pg.K_UP]:      # go forward
             self.c_ref.controller.put(1)
             self.c_ref.add_data_sample(frame, 1)
+
+            self.car.steering.put(1)
 
         elif keys[pg.K_DOWN]:
             self.c_ref.down_pressed = True
@@ -55,9 +68,9 @@ class GUI:
 
         for event in pg.event.get():
             if event.type == pg.KEYUP:
-                if event.key == pg.K_LEFT: self.c_ref.controller.put(-1)
-                elif event.key == pg.K_RIGHT: self.c_ref.controller.put(-1)
-                elif event.key == pg.K_UP: self.c_ref.controller.put(-1)
+                if event.key == pg.K_LEFT or event.key == pg.K_RIGHT or event.key == pg.K_UP:
+                    self.c_ref.controller.put(-1)
+                    self.car.steering.put(-1)
                 elif event.key == pg.K_DOWN:
                     self.c_ref.down_pressed = False
                     self.c_ref.controller.put(-1)
@@ -117,6 +130,7 @@ class GUI:
                 elif event.key == pg.K_a:
                     self.c_ref.autonomous_mode = not self.c_ref.autonomous_mode
                     self.c_ref.controller.put(-1)
+                    self.car.steering.put(-1)
                     print(f"Autonomous mode - {self.c_ref.autonomous_mode}")
 
                 elif event.key == pg.K_c:

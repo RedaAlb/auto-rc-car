@@ -13,17 +13,16 @@ from sign_detection.circle_detector import CircleDetector
 
 from traffic_light_detection.traffic_light_detector import TrafficLightDetector
 
-
 from gui.gui import GUI
 
 
-RUN_SENSOR_SERVER = 1
-RUN_CONTROLLER_SERVER = 1
+RUN_SENSOR_SERVER = True
+RUN_CONTROLLER_SERVER = True
 
 
-DISPLAY_FPS = 1
-DISPLAY_DISTANCE = 1  # Whether to display the distance received from the infrared sensor on the pi.
-CAM_PRINT_LOGS = 0    # Whether to print camera connection logs.
+DISPLAY_FPS = True
+DISPLAY_DISTANCE = True  # Whether to display the distance received from the infrared sensor on the pi.
+CAM_PRINT_LOGS = False    # Whether to print camera connection logs.
 
 
 # Which trained models to use for autonomous driving for each direction.
@@ -35,11 +34,11 @@ OBSTACLE_DISTANCE = 7  # How close an obstacle needs to be in front of the car f
 TL_STOP_DISTANCE = 50  # How close a red traffic light needs to be from the edge of the screen for the car to stop in pixels.
 
 
-DETECT_SIGNS = True  # Whether to detect signs or not.
+DETECT_SIGNS = False  # Whether to detect signs or not.
 DISPLAY_TRACKBARS = False  # Display trackbars to change argument values for the hough circles detector.
 DISPLAY_SIGN_DETECTED = True  # Whether to display the sign detected in the frame.
 
-DETECT_TRAFFIC_LIGHTS = True  # Whether to detect traffic light or not.
+DETECT_TRAFFIC_LIGHTS = False  # Whether to detect traffic light or not.
 
 # Getting computer/host IP address.
 host_name = socket.gethostname()
@@ -54,9 +53,6 @@ handler_sensor = sensor_handler.SensorHandler(host_ip, port_sensor, RUN_SENSOR_S
 handler_controller = controller_handler.ControllerHandler(host_ip, port_controller, RUN_CONTROLLER_SERVER)
 
 
-gui = GUI(handler_controller)
-
-
 handler_auto = auto_steering_handler.AutoSteeringHandler(OBSTACLE_DISTANCE, TL_STOP_DISTANCE)  # Autonomous driving handler.
 handler_auto.load_models(F_MODEL_TO_LOAD, L_MODEL_TO_LOAD, R_MODEL_TO_LOAD)  # Loading trained forward, left, and right models.
 
@@ -65,8 +61,10 @@ handler_auto.load_models(F_MODEL_TO_LOAD, L_MODEL_TO_LOAD, R_MODEL_TO_LOAD)  # L
 sign_detector = SignDetector(DETECT_SIGNS, DISPLAY_SIGN_DETECTED, DISPLAY_TRACKBARS)
 
 
-tl_detector = TrafficLightDetector()
+tl_detector = TrafficLightDetector(DETECT_TRAFFIC_LIGHTS)
 
+
+gui = GUI(handler_controller)
 
 try:
     while(True):
@@ -87,9 +85,7 @@ try:
         if DISPLAY_DISTANCE: frame = handler_sensor.display_distance(frame)
 
 
-
-        if DETECT_TRAFFIC_LIGHTS: frame, detected_light, tl_dist_to_edge = tl_detector.detect_traffic_light(frame)
-
+        frame, detected_light, tl_dist_to_edge = tl_detector.detect_traffic_light(frame)
 
 
         if DETECT_SIGNS:
@@ -109,7 +105,8 @@ try:
                                                                detected_light,
                                                                tl_dist_to_edge)
 
-            handler_controller.controller.put(predicted_steering)
+            handler_controller.controller.put(predicted_steering)  # For the real rc car.
+            gui.car.steering.put(predicted_steering)  # For the virtual rc car (for the mapping).
 
 
         
@@ -120,6 +117,7 @@ try:
         # To control the car using the keyboard, collect training data when needed, and general keyboard input.
         gui.process_key_pressed(raw_frame)
         frame = handler_controller.display_recording(frame)  # To display whether currently in data collection(recording) mode or not.
+
 
         cv2.imshow("RC Car raw cam feed", raw_frame)
         cv2.imshow("RC Car camera feed", frame)  # Frame with all the annotations.
@@ -137,6 +135,8 @@ finally:
 
     sign_detector.frame_queue.put(0)
     sign_detector.detect_signs = False
+
+    gui.car.steering.put(-2)  # To close the mapping thread.
 
     cv2.destroyAllWindows()
 
