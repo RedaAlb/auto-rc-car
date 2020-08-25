@@ -34,11 +34,11 @@ OBSTACLE_DISTANCE = 7  # How close an obstacle needs to be in front of the car f
 TL_STOP_DISTANCE = 50  # How close a red traffic light needs to be from the edge of the screen for the car to stop in pixels.
 
 
-DETECT_SIGNS = False  # Whether to detect signs or not.
+DETECT_SIGNS = True  # Whether to detect signs or not.
 DISPLAY_TRACKBARS = False  # Display trackbars to change argument values for the hough circles detector.
 DISPLAY_SIGN_DETECTED = True  # Whether to display the sign detected in the frame.
 
-DETECT_TRAFFIC_LIGHTS = False  # Whether to detect traffic light or not.
+DETECT_TRAFFIC_LIGHTS = True  # Whether to detect traffic light or not.
 
 # Getting computer/host IP address.
 host_name = socket.gethostname()
@@ -84,8 +84,9 @@ try:
         sensor_distance = handler_sensor.get_distance()
         if DISPLAY_DISTANCE: frame = handler_sensor.display_distance(frame)
 
-
-        frame, detected_light, tl_dist_to_edge = tl_detector.detect_traffic_light(frame)
+        if DETECT_TRAFFIC_LIGHTS:
+            tl_detector.frame_queue.put(frame)
+            frame, detected_light, tl_dist_to_edge = tl_detector.get_detected_tl(frame)
 
 
         if DETECT_SIGNS:
@@ -133,8 +134,11 @@ finally:
         handler_controller.server_controller.close_server()
         handler_controller.controller.put(0)  # To exit the controller thread/connection.
 
-    sign_detector.frame_queue.put(0)
+    sign_detector.frame_queue.put(0)  # To stop the thread.
     sign_detector.detect_signs = False
+
+    tl_detector.frame_queue.put(0)
+    tl_detector.detect_traffic_lights = False
 
     gui.car.steering.put(-2)  # To close the mapping thread.
 

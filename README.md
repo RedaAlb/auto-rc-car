@@ -43,6 +43,7 @@ This readme file is to be updated and refined at the end of the project.
     - [x] Map the car movement virtually.
     - [ ] Ability to map the road into a 2D canvas as the car moves around the road in real-time.
     - [ ] Ability to select any position on the road on the 2D canvas and the car to navigate to that position.
+- [ ] Look into making auto steering predictions into it's own thread.
 - [ ] Real-time graph of the FPS, to track when/if things go wrong.
 - [ ] Add docstrings and document everything.
 
