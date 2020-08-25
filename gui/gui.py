@@ -20,8 +20,10 @@ class GUI:
         self.canvas.fill(self.canvas_bg)
 
         font = pg.font.Font(None, 32)
-        text = font.render("Focus this window to use keyboard shortcuts", 1, (100, 100, 100))
-        self.canvas.blit(text, (20, 20))
+        text1 = font.render("Once the camera connection is established,", 1, (0, 0, 0))
+        text2 = font.render("focus this window to use keyboard shortcuts", 1, (0, 0, 0))
+        self.canvas.blit(text1, (20, 20))
+        self.canvas.blit(text2, (20, 45))
 
         pg.display.flip()
         pg.display.update()
