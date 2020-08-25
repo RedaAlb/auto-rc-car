@@ -2,10 +2,6 @@ import threading
 from queue import Queue
 import time
 
-import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-import pygame as pg
-
 import numpy as np
 import cv2
 
@@ -46,119 +42,6 @@ class ControllerHandler:
 
         self.autonomous_mode = False  # Whether the car should drive autonomously or not.
         self.auto_direction = 1  # Which model to use for steering. 1,2,3 -> forward, left, or right model.
-
-        # TODO: Take care of all GUI stuff in a GUI class. But do this when I find something to replace pygame with.
-        pg.init()
-        display = pg.display.set_mode((400, 400))
-        display.fill((255, 255, 255))
-
-        font = pg.font.Font(None, 32)
-        text = font.render("Focus this window to control car", 1, (100, 100, 100))
-        display.blit(text, (20, 20))
-        pg.display.update()
-
-    def process_key_pressed(self, frame=None):
-        # For controlling the car manually and to collect training data.
-
-        keys = pg.key.get_pressed()
-
-        # This if statement separation/order is done for smooth steering using the keyboard.
-        if keys[pg.K_LEFT]:      # steer left
-            if self.down_pressed:
-                self.controller.put(5)  # backwards left
-            else:
-                self.controller.put(2)
-                self.add_data_sample(frame, 2)
-
-        elif keys[pg.K_RIGHT]:   # steer right
-            if self.down_pressed:
-                self.controller.put(6)  # backwards right
-            else:
-                self.controller.put(3)
-                self.add_data_sample(frame, 3)
-                
-        elif keys[pg.K_UP]:      # go forward
-            self.controller.put(1)
-            self.add_data_sample(frame, 1)
-
-        elif keys[pg.K_DOWN]:
-            self.down_pressed = True
-            self.controller.put(4)  # reverse
-
-        elif keys[pg.K_HASH]:
-            self.controller.put(-1) # stop, do nothing
-
-        for event in pg.event.get():
-            if event.type == pg.KEYUP:
-                if event.key == pg.K_LEFT: self.controller.put(-1)
-                elif event.key == pg.K_RIGHT: self.controller.put(-1)
-                elif event.key == pg.K_UP: self.controller.put(-1)
-                elif event.key == pg.K_DOWN:
-                    self.down_pressed = False
-                    self.controller.put(-1)
-
-
-                # On key release/key-up so nothing happens twice accidentally.
-                if event.key == pg.K_s:  # Save all collected training data.
-                    self.save_collected_data()
-                    print("Data collection - Training data SAVED")
-
-                elif event.key == pg.K_p:  # Pause/unpause data collection
-                    if self.is_collecting_data:
-                        self.is_collecting_data = False
-                        print("Data collection - Collection PAUSED")
-                    else:
-                        self.is_collecting_data = True
-                        print("Data collection - Collection STARTED")
-    
-                elif event.key == pg.K_r:
-                    self.reset_collected_data()
-                    print("Data collection - Collected data RESET")
-                
-                elif event.key == pg.K_1:
-                    if self.is_collecting_data:
-                        self.rec_direction = 1
-                        print("Data collection - Recording for forward(1) steering")
-                    else:
-                        self.auto_direction = 1  # If not in collection mode, use 1,2,3 numbers to change model to use rather than changing recording direction.
-                        print("Autonomous mode - Now using the forward model for driving.")
-
-                elif event.key == pg.K_2:
-                    if self.is_collecting_data:
-                        self.rec_direction = 2
-                        print("Data collection - Recording for left(2) steering")
-                    else:
-                        self.auto_direction = 2
-                        print("Autonomous mode - Now using the left model for driving.")
-
-                elif event.key == pg.K_3:
-                    if self.is_collecting_data:
-                        self.rec_direction = 3
-                        print("Data collection - Recording for right(3) steering")
-                    else:
-                        self.auto_direction = 3
-                        print("Autonomous mode - Now using the right model for driving.")
-
-                elif event.key == pg.K_i:
-                    self.print_collection_info()
-
-                elif event.key == pg.K_0:
-                    self.laps_done += 1
-                    print("Data collection - lap added, done", self.laps_done, "laps")
-                elif event.key == pg.K_MINUS:
-                    self.laps_done = 0
-                    print("Data collection - laps reset")
-
-                elif event.key == pg.K_a:
-                    self.autonomous_mode = not self.autonomous_mode
-                    self.controller.put(-1)
-                    print(f"Autonomous mode - {self.autonomous_mode}")
-
-                elif event.key == pg.K_c:
-                    if not os.path.exists("captured_images"): os.makedirs("captured_images")
-                    file_name = int(time.time())
-                    cv2.imwrite(f"captured_images/{file_name}.jpg", frame)
-
 
 
     def add_data_sample(self, frame, steering_dir):
