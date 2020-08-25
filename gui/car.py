@@ -20,14 +20,14 @@ class Car:
     def mapping_thread(self, steering):
 
         image = cv2.imread("gui/bg.png")
-        pos = (100, 100)  # Position of the virtual car (vc).
-        angle = 0
+        pos = (200, 400)  # Position of the virtual car (vc).
+        angle = 90
         width = 100
         height = 100
 
-        speed = 0.3  # Forward speed of the vc.
-        left_turning_speed = 20  # How fast the vc turns.
-        right_turning_speed = 20
+        speed = 0.5  # Forward speed of the vc.
+        left_turning_speed = 12.85  # How fast the vc turns.
+        right_turning_speed = 12.6
 
 
         # Used to time how long one full revolution(spin) the vc takes. This time needs to match with the real rc car.
@@ -56,6 +56,7 @@ class Car:
                 new_y = pos[1] + (speed*np.sin(-np.radians(angle)))
                 pos = (new_x, new_y)
 
+            # print(angle)
 
             # Drawing a small circle for every position the vc has been to represent the trail of the vc.
             image = cv2.circle(image, (int(pos[0]), int(pos[1])), radius=1, color=(0, 0, 255), thickness=-1)
@@ -86,10 +87,10 @@ class Car:
             img = cv2.line(img, (p1_new[0, 0], p1_new[0, 1]), (p3_new[0, 0], p3_new[0, 1]), (255, 0, 0), 1)
 
             if GET_REV_TIME:
-                if (angle < 0 or angle > 0) and not revolution_started:
+                if (angle < 90 or angle > 90) and not revolution_started:
                     start_time = int(time.time() * 1000)
                     revolution_started = True
-                if (angle < -360 or angle > 360) and not revolution_ended:
+                if (angle < -270 or angle > 450) and not revolution_ended:
                     end_time = int(time.time() * 1000)
                     print("Time taken:", end_time - start_time)
                     revolution_ended = True
