@@ -22,9 +22,7 @@ This readme file is to be updated and refined at the end of the project.
     in main.py
 - [x] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
-- [ ] Make a GUI specific class to handle all GUI related stuff.
-- [ ] Find an alternative to pygame......... I don't like it at all. I need a better way to get keyboard input without interfering with cv2.
-- [ ] I might want to make a data collection class to handle all of that to keep seperate from the controller handler.
+- [x] Make a GUI specific class to handle all GUI related stuff.
 - [x] RC Car steering
     - [x] Add ability to collect training data
     - [x] Collect data 
@@ -42,6 +40,7 @@ This readme file is to be updated and refined at the end of the project.
     - [x] This was not done at the moment, but a Haar cascade detector was used instead. If time at the end, I will attempt
     to create a CNN to detect traffic lights.
 - [ ] Try to make the car map the road.
+    - [x] Map the car movement virtually.
     - [ ] Ability to map the road into a 2D canvas as the car moves around the road in real-time.
     - [ ] Ability to select any position on the road on the 2D canvas and the car to navigate to that position.
 - [ ] Real-time graph of the FPS, to track when/if things go wrong.
@@ -70,6 +69,7 @@ This readme file is to be updated and refined at the end of the project.
 
 `/traffic_light_detection`, contains anything related to the traffic light detection.
 
+`/gui`, contains all the files related to creating the gui, including the road mapping.
 
 ## To run
 
@@ -93,4 +93,5 @@ TODO: I need to make this section better and put it somewhere more appropriate.
 `[-]` Reset the laps done to zero.<br>
 `[Arrow keys]` Control car.<br>
 `[a]` Toggle between autonomous mode and manual driving.<br>
+`[#]` Stop the car.<br>
 `[c]` Capture and save current frame/image.<br>

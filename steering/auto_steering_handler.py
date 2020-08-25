@@ -27,7 +27,7 @@ class AutoSteeringHandler:
     def predict_steering(self, frame, auto_direction, sensor_distance, detected_light, tl_dist_to_edge):
 
         # If an obstacle is in front of the car, ignore everything else and stop the car.
-        if sensor_distance <= self.obstacle_distance:
+        if sensor_distance is not None and sensor_distance <= self.obstacle_distance:
             return -1
 
         # If a red light is detected and is close to the edge, then also stop the car.
