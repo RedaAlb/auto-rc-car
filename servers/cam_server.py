@@ -76,4 +76,4 @@ class CameraServer:
 
     def close_server(self):
         self.cam_socket.close()
-        print("Server (camera) - connection closed")
+        print("Server (camera) - Connection closed")

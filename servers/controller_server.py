@@ -10,30 +10,38 @@ class ControllerServer:
         self.host_ip = host_ip
         self.port_controller = port_controller
 
-        # This will hold what signal to send to pi to tell the motors/pi to do.
-        self.controller = -1  # Can be -1, 1, 2, or 3 -> do nothing, forward, left, right, signals respectively. 0 to close connection.
         self.stop_controller_server = False
 
-    def start_server(self, queue):
+    def start_server(self, controller):
         self.controller_socket = socket.socket()  # Not in constructor so the socket is on the thread completely.
         self.controller_socket.bind((self.host_ip, self.port_controller))
 
         self.controller_socket.listen(0)
         print(f"Server (controller) - TCP connection opened on {self.host_ip}:{self.port_controller}, waiting for controller connection...")
 
-        self.controller_conn = self.controller_socket.accept()[0]
-        print("Server (controller) - Connection made with Pi motors")
+        try:
+            self.controller_conn = self.controller_socket.accept()[0]
+            print("Server (controller) - Connection made with Pi motors")
+        except:  # Program finished/exited before connection with the controller client got established.
+            pass
 
 
         # Sending the currently set control signal to the pi, to tell the motors what to do.
         while(not self.stop_controller_server):
 
-            controller_in_bytes = struct.pack("i", queue.get())  # ConvertiWng to bytes.
+            # This will hold what signal to send to pi to tell the motors/pi to do.
+            steering_dir = controller.get()  # Can be -1, 0, 1, 2, 3, 4 -> do nothing, close connection, forward, left, right, reverse, signals respectively.
+            
+            controller_in_bytes = struct.pack("i", steering_dir)  # Converting to bytes.
 
             try:
                 data = self.controller_conn.send(controller_in_bytes)
-            except (ConnectionAbortedError, ConnectionResetError) as err: # For when the connection is interupted from program exit.
-                # TODO: Send 0 here to close the connection on the client end on the pi, but might not be needed.
+            except (ConnectionAbortedError, ConnectionResetError, OSError) as err: # For when the connection is interupted from program exit.
+                break
+
+
+            if steering_dir == 0:  # zero signals to close the connection.
+                self.close_server()
                 break
 
             time.sleep(self.CONTROLLER_DELAY)
@@ -42,6 +50,10 @@ class ControllerServer:
     def close_server(self):
         self.stop_controller_server = True
         self.controller_socket.close()
-        self.controller_conn.close()
+
+        try:
+            self.controller_conn.close()
+        except AttributeError as err:  # When program exits without making a connection to the controller server.
+            pass
 
         print("Server (controller) - Controller connection closed")

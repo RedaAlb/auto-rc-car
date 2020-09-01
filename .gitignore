@@ -3,3 +3,10 @@ servers/__pycache__
 servers/__pycache__/*
 .ipynb_checkpoints
 .vscode
+steering/data/*
+steering/saved_models/*
+steering/logs
+steering/_model_notes.md
+angle_data
+sign_detection/data/*
+captured_images

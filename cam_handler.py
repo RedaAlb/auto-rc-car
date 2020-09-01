@@ -49,5 +49,5 @@ class CamHandler:
         return frame
 
     def display_fps(self, frame):
-        frame = cv2.putText(frame, str(self.fps) + " FPS", (10, 20), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
+        frame = cv2.putText(frame, str(self.fps) + " FPS", (10, 20), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), thickness=2)
         return frame

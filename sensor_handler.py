@@ -18,7 +18,10 @@ class SensorHandler:
     
 
     def get_distance(self):  # Infrared sensor distance
-        return self.server_sensor.distance
+        if self.run_sensor_server:
+            return self.server_sensor.distance
+        
+        return None
 
     def display_distance(self, frame):
 
@@ -28,5 +31,5 @@ class SensorHandler:
             return frame
         else:
             dist = round(dist, 2)
-            frame = cv2.putText(frame, str(dist) + " cm", (10, 34), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
+            frame = cv2.putText(frame, str(dist) + " cm", (10, 34), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), thickness=2)
             return frame

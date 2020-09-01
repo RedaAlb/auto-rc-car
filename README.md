@@ -1,8 +1,8 @@
 # Auto-RC-Car
 
-This is my MSc Artificial Intelligence project.
+This is my MSc Artificial Intelligence project. A paper associated with this project will be available here on project completion.
 
-This readme file is to be updated and refined as the projects evolves.
+This readme file is to be updated and refined at the end of the project.
 
 
 ## To do next
@@ -20,9 +20,31 @@ This readme file is to be updated and refined as the projects evolves.
 - [x] Make main loop in main.py into a class, and clean up main.py
     - Maybe make a CamHandler class to take care of it, and have instance var of frame that I can access
     in main.py
-- [ ] Close threads properly when program is finished.
+- [x] Close threads properly when program is finished.
 - [ ] Make another window for all stats/details, e.g. fps, num of bytes, delay, distance, etc.
-- [ ] RC Car steering
+- [x] Make a GUI specific class to handle all GUI related stuff.
+- [x] RC Car steering
+    - [x] Add ability to collect training data
+    - [x] Collect data 
+    - [x] Create and train Auto steering module.
+    - [x] Extract road features
+        - [x] Mask of the road using only edges of the road.
+        - [x] Centre of lane
+    - [x] Train a CNN on only the masks to find optimal CNN for masks, then combine with full frame CNN.
+    - [x] Add centre of lane to fully connected layer (FCL) at the end to create 1 big network to combine all features.
+        - So network will consists of 2 image inputs, frame and mask, and 1 integer at the final fully connected layer.
+    - [x] Once the forward model is trained and works well, train the left and right models.
+- [x] Create and train sign detector.
+    - [x] Apply it to the RC Car.
+- [ ] Create and train a CNN to detect traffic signs, where the prediction is [x, y, w, h] of the bounding box.
+    - [x] This was not done at the moment, but a Haar cascade detector was used instead. If time at the end, I will attempt
+    to create a CNN to detect traffic lights.
+- [ ] Try to make the car map the road.
+    - [x] Map the car movement virtually.
+    - [ ] Ability to map the road into a 2D canvas as the car moves around the road in real-time.
+    - [ ] Ability to select any position on the road on the 2D canvas and the car to navigate to that position.
+- [ ] Look into making auto steering predictions into it's own thread.
+- [ ] Real-time graph of the FPS, to track when/if things go wrong.
 - [ ] Add docstrings and document everything.
 
 
@@ -38,15 +60,39 @@ This readme file is to be updated and refined as the projects evolves.
 
 `/servers`, contains the server files for the camera, sensor, and controller connections between the computer and the Pi.
 
-`/on_raspberrypi`, contains the files that are on the raspberry pi and that needs to be ran on the pi.
+`/on_raspberrypi`, contains the files that are on the raspberry pi.
 
 `/testing`, contains sub-directories to test and analyse different components of the project.
 
+`/steering`, contains anything related to the autonomous steering/driving.
+
+`/sign_detection`, contains anything related to the signs detection and recognition.
+
+`/traffic_light_detection`, contains anything related to the traffic light detection.
+
+`/gui`, contains all the files related to creating the gui, including the road mapping.
 
 ## To run
-- [ ] Add hardware configuration here.
-- [ ] I need to check if running from root or sub-directories makes a difference or not.
 
-1. Run `main.py` on the computer.
-1. Run `cam_client.py` on the pi.
-1. Run `sensor_control_client.py` on the pi.
+TODO:
+- Add hardware configuration here.
+- Somewhere I need to explain all the keyboard inputs to use, but if I do a GUI, I might not need to.
+- Add exact steps to re-produce everything. Also show how to run for specific tasks, e.g. to train model, collect data, etc.
+
+
+## Keyboard shortcuts
+
+TODO: I need to make this section better and put it somewhere more appropriate.
+
+`[q]` Quit program.<br>
+`[p]` Pause/unpause data collection.<br>
+`[s]` Save data collected.<br>
+`[r]` Reset/delete currently collected data.<br>
+`[i]` Information regarding current data collection state<br>
+`[1]`, `[2]`, `[3]` To choose which steering direction mode to collect data for (forward, left, right). Note that if not in data collection mode, `[1]`, `[2]`, `[3]` will be used to change which model to use for autonomous driving.<br>
+`[0]` Add one lap, used to track what lap you are in when collecting data for convenience.<br>
+`[-]` Reset the laps done to zero.<br>
+`[Arrow keys]` Control car.<br>
+`[a]` Toggle between autonomous mode and manual driving.<br>
+`[#]` Stop the car.<br>
+`[c]` Capture and save current frame/image.<br>
