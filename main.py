@@ -16,29 +16,29 @@ from traffic_light_detection.traffic_light_detector import TrafficLightDetector
 from gui.gui import GUI
 
 
-RUN_SENSOR_SERVER = False
+RUN_SENSOR_SERVER = True
 RUN_CONTROLLER_SERVER = True
 
 
-DISPLAY_FPS = False
+DISPLAY_FPS = True
 DISPLAY_DISTANCE = False  # Whether to display the distance received from the infrared sensor on the pi.
 CAM_PRINT_LOGS = False    # Whether to print camera connection logs.
 
 
 # Which trained models to use for autonomous driving for each direction.
-F_MODEL_TO_LOAD = "3_0_16_oldM_baseL_Ddata_dAug_MEpochs"
-L_MODEL_TO_LOAD = "6_4_bestModel_Lmodel_dataAug"
-R_MODEL_TO_LOAD = "7_1_bestModel_Rmodel_firstTime_dAug_1000Epochs"
+F_MODEL_TO_LOAD = "forward_model"
+L_MODEL_TO_LOAD = "left_model"
+R_MODEL_TO_LOAD = "right_model"
 
 OBSTACLE_DISTANCE = 7  # How close an obstacle needs to be in front of the car for the car to stop in cm.
 TL_STOP_DISTANCE = 50  # How close a red traffic light needs to be from the edge of the screen for the car to stop in pixels.
 
 
-DETECT_SIGNS = False  # Whether to detect signs or not.
+DETECT_SIGNS = True  # Whether to detect signs or not.
 DISPLAY_TRACKBARS = False  # Display trackbars to change argument values for the hough circles detector.
 DISPLAY_SIGN_DETECTED = True  # Whether to display the sign detected in the frame.
 
-DETECT_TRAFFIC_LIGHTS = False  # Whether to detect traffic light or not.
+DETECT_TRAFFIC_LIGHTS = True  # Whether to detect traffic light or not.
 
 # Getting computer/host IP address.
 host_name = socket.gethostname()

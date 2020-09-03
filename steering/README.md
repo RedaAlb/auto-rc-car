@@ -20,4 +20,6 @@ This directory contains all the files for the autonomous steering/driving.
 
 `auto_steering_handler.py`, used to handle the autonomous driving by using the trained models.
 
+`/data`, will hold all the data collected which will be used for training.
 
+`/saved_models`, all models you train will be saved in this directory. Fully trained models are provided, however, if you want to train using your own collected data, refer to keyboard shortcuts in the main [readme](../README.md) file.

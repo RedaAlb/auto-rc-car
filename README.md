@@ -1,6 +1,7 @@
 # Auto-RC-Car
 
-This is my MSc Artificial Intelligence project. A paper associated with this project will be available here on project completion.
+This is my MSc Artificial Intelligence project. The paper associated with this project can be found [here](for_readme/MSc_AI_Auto_RC_Car_paper.pdf).
+
 
 
 ## Files and directories notes
@@ -27,13 +28,51 @@ This is my MSc Artificial Intelligence project. A paper associated with this pro
 
 `/gui`, contains all the files related to creating the gui, including the road mapping.
 
+`/for_readme`, contains files such as images for the main readme file.
+
 ## To run
 
-TODO:
-- Add hardware configuration here.
-- Somewhere I need to explain all the keyboard inputs to use, but if I do a GUI, I might not need to.
-- Add exact steps to re-produce everything. Also show how to run for specific tasks, e.g. to train model, collect data, etc.
+### Step 0 - Hardware components required
 
+There are two options:
+
+1. Use only the minimum hardware required, which is a Raspberry Pi (any version) and a PiCamera connected to it. This will only allow you to stream the camera frames to the computer at your chosen resolution and FPS.
+
+1. To produce the exact same results and be able run everything, below is all the hardware components you will need:
+
+| Component                        | Purpose                 | Cost (£) |
+|----------------------------------|-------------------------|----------|
+| Raspberry Pi 4 Model B - 8GB RAM | Microcomputer           | 73.50    |
+| Explorer HAT Pro                 | H-Bridge & Analog input | 20.40    |
+| Raspberry   Pi Camera v2.1       | Camera                  | 24.21    |
+| Sharp IR GP2Y0A41SK0F            | Distance sensor         | 8.99     |
+| STS-Pi Roving Robot              | Chassis & Motors        | 27.90    |
+| Poweradd EnergyCell 5000mAh      | Power supply            | 12.00    |
+| Total cost                       |                         | 167.00   |
+
+
+Visual view of the hardware setup:
+
+![Visual hardware setup](for_readme/hardware_setup.png)
+
+
+
+### Step 1 - Setting up the environment
+
+- Python 3.7.7 is required.
+- Setup an environment using the `requirements.txt` file.
+
+
+### Step 2 - To run
+
+1. Change appropriate parameters (capital variable names) in `main.py` if needed.
+1. Run `main.py`, this will display your computer local IP address for convenience.
+1. Change the host IP to the one obtained from the previous step in `cam_client.py`, then run `cam_client.py` on the Raspberry Pi.
+    - You should now see the live camera feed on the computer.
+    - You can specify the resolution and FPS in `cam_client.py`
+1. Change the host IP in `sensor_controller_client.py`, then run `sensor_controller_client.py` on the Raspberry Pi to establish the sensor and controller connections.
+1. See keyboard shortcuts below.
+1. For anything else such as model training, each directory has its own readme file you can [refer to.](#Files-and-directories-notes)
 
 ## Keyboard shortcuts
 

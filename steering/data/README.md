@@ -1,0 +1,1 @@
+When you collect data, it will be saved in this directory.
