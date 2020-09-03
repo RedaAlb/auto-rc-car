@@ -5,7 +5,6 @@ from sensor_client import SensorClient
 from controller_client import ControllerClient
 
 host_ip = "192.168.0.17"  #  desktop
-# host_ip = "192.168.0.15"    #  laptop
 
 port_sensor = 5001
 port_controller = 5002
