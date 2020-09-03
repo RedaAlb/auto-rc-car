@@ -37,16 +37,16 @@ class CamHandler:
         # If frame data was not successfully received or something went wrong, skip this frame.
         if img_bytes is None or img_bytes == b'' or len(img_bytes) <= 4:
             if self.cam_print_logs: print("No frame received")
-            return None
+            return None, None
 
         # Converting image bytes to an actual image/frame.
         np_arr = np.frombuffer(img_bytes, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         if frame is None:  # Ensuring the decoding was successfull as well (no corruption in image data).
-            return None
+            return None, None
         
-        return frame
+        return frame, img_bytes
 
     def display_fps(self, frame):
         frame = cv2.putText(frame, str(self.fps) + " FPS", (10, 20), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), thickness=2)

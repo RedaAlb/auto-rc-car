@@ -16,12 +16,12 @@ from traffic_light_detection.traffic_light_detector import TrafficLightDetector
 from gui.gui import GUI
 
 
-RUN_SENSOR_SERVER = True
+RUN_SENSOR_SERVER = False
 RUN_CONTROLLER_SERVER = True
 
 
-DISPLAY_FPS = True
-DISPLAY_DISTANCE = True  # Whether to display the distance received from the infrared sensor on the pi.
+DISPLAY_FPS = False
+DISPLAY_DISTANCE = False  # Whether to display the distance received from the infrared sensor on the pi.
 CAM_PRINT_LOGS = False    # Whether to print camera connection logs.
 
 
@@ -34,11 +34,11 @@ OBSTACLE_DISTANCE = 7  # How close an obstacle needs to be in front of the car f
 TL_STOP_DISTANCE = 50  # How close a red traffic light needs to be from the edge of the screen for the car to stop in pixels.
 
 
-DETECT_SIGNS = True  # Whether to detect signs or not.
+DETECT_SIGNS = False  # Whether to detect signs or not.
 DISPLAY_TRACKBARS = False  # Display trackbars to change argument values for the hough circles detector.
 DISPLAY_SIGN_DETECTED = True  # Whether to display the sign detected in the frame.
 
-DETECT_TRAFFIC_LIGHTS = True  # Whether to detect traffic light or not.
+DETECT_TRAFFIC_LIGHTS = False  # Whether to detect traffic light or not.
 
 # Getting computer/host IP address.
 host_name = socket.gethostname()
@@ -70,7 +70,7 @@ try:
     while(True):
 
         # Requesting/getting the frame from the pi.
-        raw_frame = handler_cam.get_frame()
+        raw_frame, _ = handler_cam.get_frame()
 
         if raw_frame is None:  # Ensuring a frame was received and processed successfully.
             continue
@@ -87,6 +87,9 @@ try:
         if DETECT_TRAFFIC_LIGHTS:
             tl_detector.frame_queue.put(frame)
             frame, detected_light, tl_dist_to_edge = tl_detector.get_detected_tl(frame)
+        else:
+            detected_light = 0
+            tl_dist_to_edge = 0
 
 
         if DETECT_SIGNS:
