@@ -53,7 +53,7 @@ There are two options:
 
 Visual view of the hardware setup:
 
-![Visual hardware setup](for_readme/hardware_setup.PNG)
+![Visual hardware setup](for_readme/hardware_setup.png)
 
 
 
