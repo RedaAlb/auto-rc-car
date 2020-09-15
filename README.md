@@ -18,7 +18,7 @@ This is my MSc Artificial Intelligence project. The paper associated with this p
 
 `/on_raspberrypi`, contains the files that are on the raspberry pi.
 
-`/testing`, contains sub-directories to test and analyse different components of the project.
+`/testing_cam_connection`, contains files to test and analyse the camera network connection between the computer and the Pi.
 
 `/steering`, contains anything related to the autonomous steering/driving.
 
@@ -53,7 +53,7 @@ There are two options:
 
 Visual view of the hardware setup:
 
-![Visual hardware setup](for_readme/hardware_setup.png)
+![Visual hardware setup](for_readme/hardware_setup.PNG)
 
 
 
