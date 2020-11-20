@@ -60,7 +60,7 @@ Visual view of the hardware setup:
 ### Step 1 - Setting up the environment
 
 - Python 3.7.7 is required.
-- Setup an environment using the `requirements.txt` file.
+- Setup an environment using the `requirements.txt` file (to be added).
 
 
 ### Step 2 - To run
