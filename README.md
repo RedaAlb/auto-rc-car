@@ -1,7 +1,8 @@
 # Auto-RC-Car
 
-This is my MSc Artificial Intelligence project. The paper associated with this project can be found [here](for_readme/MSc_AI_Auto_RC_Car_paper.pdf).
+This is my MSc Artificial Intelligence project. This repo is being replaced by a newer [repo](https://github.com/RedaAlb/auto-rc-car) as I am re-creating the project from scratch.
 
+There is a paper associated with this project, which can be found [here](for_readme/MSc_AI_Auto_RC_Car_paper.pdf).
 
 
 ## Files and directories notes
