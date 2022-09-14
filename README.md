@@ -4,6 +4,7 @@ This is my MSc Artificial Intelligence project. This repo is being replaced by a
 
 There is a paper associated with this project, which can be found [here](for_readme/MSc_AI_Auto_RC_Car_paper.pdf).
 
+Demo [video](https://youtu.be/JC426WmcdUs).
 
 ## Files and directories notes
 `main.py` is the executable for this project. It combines everything together.
