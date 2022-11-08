@@ -1,10 +1,13 @@
-# Auto-RC-Car
+# Old Auto-RC-Car
 
 This is my MSc Artificial Intelligence project. This repo is being replaced by a newer [repo](https://github.com/RedaAlb/auto-rc-car) as I am re-creating the project from scratch.
 
 There is a paper associated with this project, which can be found [here](for_readme/MSc_AI_Auto_RC_Car_paper.pdf).
 
 Demo [video](https://youtu.be/JC426WmcdUs).
+
+[![Video](for_readme/thumbnail.png)](https://youtu.be/JC426WmcdUs "Video demo")
+
 
 ## Files and directories notes
 `main.py` is the executable for this project. It combines everything together.
