@@ -1,8 +1,6 @@
-explorerhat==0.5.1
 matplotlib==3.5.2
-numpy==1.15.1
+numpy==1.23.4
 pandas==1.4.3
-picamera==1.13
 pygame==2.1.2
 scikit_learn==1.1.1
 tensorflow==2.9.1
